@@ -24,6 +24,10 @@ class Oli_BIS_Schema_Test extends TestCase {
 		$this->assertStringContainsString( 'UNIQUE KEY email_product', $sql );
 		$this->assertStringContainsString( 'converted_order_id', $sql );
 		$this->assertStringContainsString( 'language varchar(32)', $sql );
+		$this->assertStringContainsString( 'legacy_source', $sql );
+		$this->assertStringContainsString( 'legacy_id', $sql );
+		$this->assertStringContainsString( 'KEY legacy', $sql );
+		$this->assertSame( '0.1.1', Oli_BIS_Schema::DB_VERSION );
 	}
 
 	public function test_statuses() {

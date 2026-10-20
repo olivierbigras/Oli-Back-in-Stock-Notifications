@@ -15,7 +15,7 @@ defined( 'ABSPATH' ) || exit;
  */
 class Oli_BIS_Schema {
 
-	const DB_VERSION = '0.1.0';
+	const DB_VERSION = '0.1.1';
 
 	/**
 	 * Returns the subscriptions table name for a prefix.
@@ -70,12 +70,15 @@ class Oli_BIS_Schema {
 	converted_at datetime NULL,
 	converted_order_id bigint(20) unsigned NOT NULL DEFAULT 0,
 	token_key varchar(64) NOT NULL DEFAULT '',
+	legacy_source varchar(32) NOT NULL DEFAULT '',
+	legacy_id bigint(20) unsigned NOT NULL DEFAULT 0,
 	PRIMARY KEY  (id),
 	UNIQUE KEY email_product (email, product_id, variation_id),
 	KEY status (status),
 	KEY product_id (product_id),
 	KEY user_id (user_id),
-	KEY created_at (created_at)
+	KEY created_at (created_at),
+	KEY legacy (legacy_source, legacy_id)
 ) {$charset_collate};";
 	}
 

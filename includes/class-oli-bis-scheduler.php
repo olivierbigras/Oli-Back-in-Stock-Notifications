@@ -125,12 +125,15 @@ class Oli_BIS_Scheduler {
 	 * @return void
 	 */
 	public function cleanup_unverified() {
-		if ( ! Oli_BIS_Settings::enabled( 'double_optin' ) ) {
-			return;
+		if ( Oli_BIS_Settings::enabled( 'double_optin' ) ) {
+			$days = absint( Oli_BIS_Settings::get( 'delete_unverified_days', 7 ) );
+			Oli_BIS_Repository::delete_unverified_older_than( $days );
 		}
 
-		$days = absint( Oli_BIS_Settings::get( 'delete_unverified_days', 7 ) );
-		Oli_BIS_Repository::delete_unverified_older_than( $days );
+		if ( Oli_BIS_Settings::enabled( 'auto_cleanup_notified' ) ) {
+			$days = absint( Oli_BIS_Settings::get( 'cleanup_notified_days', 30 ) );
+			Oli_BIS_Repository::delete_notified_older_than( $days );
+		}
 	}
 
 	/**

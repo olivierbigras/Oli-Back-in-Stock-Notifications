@@ -82,4 +82,5 @@ require_once dirname( __DIR__ ) . '/includes/class-oli-bis-schema.php';
 require_once dirname( __DIR__ ) . '/includes/class-oli-bis-subscription.php';
 require_once dirname( __DIR__ ) . '/includes/class-oli-bis-repository.php';
 require_once dirname( __DIR__ ) . '/includes/class-oli-bis-migrator.php';
+require_once dirname( __DIR__ ) . '/includes/class-oli-bis-email-content.php';
 require_once dirname( __DIR__ ) . '/includes/class-oli-bis-language.php';

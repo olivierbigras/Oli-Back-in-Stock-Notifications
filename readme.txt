@@ -5,7 +5,7 @@ Tags: woocommerce, back in stock, stock notifications, waitlist, restock
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 0.1.0
+Stable tag: 0.1.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -33,7 +33,9 @@ Oli Back in Stock Notifications for WooCommerce adds a "Notify me" form to out-o
 * Signup confirmation email
 * Optional admin email on new signups
 * Dashboard stats: signups, notifications sent, and conversions via order attribution
-* Shortcode `[oli_bis_notify_form]` and a block for the form
+* Shortcode `[oli_bis_notify_form]` (PixM alias `[wc_back_in_stock_form]`) and a block for the form
+* Safe import from the PixM `wc-back-in-stock-notifications` table (dry-run, never deletes source data)
+* Optional custom email bodies and auto-cleanup of sent notifications
 * TranslatePress-aware emails (subscriber language)
 * High-Performance Order Storage declared
 * Classic and block product templates
@@ -62,7 +64,7 @@ It targets the same store-owner workflow: product-page signups, waitlist managem
 
 = Will it keep data from an existing waitlist plugin? =
 
-Version 0.1.0 uses the `wp_oli_bis_subscriptions` table. A migrator is ready to map common legacy rows when the live PixM plugin source is compared.
+Yes. Version 0.1.1 detects Olivier's PixM plugin table `wp_wc_back_in_stock_notifications` and the options `wc_bis_email_template`, `wc_bis_confirmation_email_template`, and `wc_bis_auto_cleanup`. Use WooCommerce → Stock dashboard → Dry-run import, then Import subscribers. The import is idempotent (email + product + variation, plus stored PixM row IDs). Source rows and options are never deleted.
 
 = Can customers unsubscribe? =
 
@@ -70,10 +72,18 @@ Yes. Confirmation and restock emails include a signed one-click link. Logged-in 
 
 == Changelog ==
 
+= 0.1.1 =
+* PixM subscriber import (dry-run, idempotent, source data kept).
+* Shortcode alias `[wc_back_in_stock_form]`.
+* Custom email bodies and auto-cleanup of sent notifications.
+
 = 0.1.0 =
 * Initial release.
 
 == Upgrade Notice ==
+
+= 0.1.1 =
+Adds a safe importer for the live PixM waitlist table so you can switch plugins without losing subscribers.
 
 = 0.1.0 =
 Initial public version.

@@ -21,10 +21,15 @@ class Oli_BIS_Form {
 	 * @since 0.1.0
 	 * @param WC_Product $product Product.
 	 * @param string     $source  Source slug.
+	 * @param bool       $force   Show even when the product is in stock.
 	 * @return string
 	 */
-	public static function render( $product, $source = 'form' ) {
-		if ( ! Oli_BIS_Compatibility::should_show_form( $product ) ) {
+	public static function render( $product, $source = 'form', $force = false ) {
+		if ( $force ) {
+			if ( ! Oli_BIS_Compatibility::is_supported_product( $product ) || ! Oli_BIS_Compatibility::is_enabled_for_product( $product ) ) {
+				return '';
+			}
+		} elseif ( ! Oli_BIS_Compatibility::should_show_form( $product ) ) {
 			return '';
 		}
 

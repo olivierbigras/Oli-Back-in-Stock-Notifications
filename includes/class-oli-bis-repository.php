@@ -592,6 +592,152 @@ class Oli_BIS_Repository {
 	}
 
 	/**
+	 * Existing unique keys for import planning.
+	 *
+	 * @since 0.1.1
+	 * @return array<string,int>
+	 */
+	public static function existing_unique_keys() {
+		global $wpdb;
+
+		$table = self::table();
+		$rows  = $wpdb->get_results( "SELECT id, email, product_id, variation_id FROM {$table}", ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$keys  = array();
+
+		if ( is_array( $rows ) ) {
+			foreach ( $rows as $row ) {
+				$key          = Oli_BIS_Migrator::unique_key( $row['email'], $row['product_id'], $row['variation_id'] );
+				$keys[ $key ] = absint( $row['id'] );
+			}
+		}
+
+		return $keys;
+	}
+
+	/**
+	 * Legacy IDs already imported for a source.
+	 *
+	 * @since 0.1.1
+	 * @param string $source Source slug.
+	 * @return array<int,int>
+	 */
+	public static function legacy_ids( $source ) {
+		global $wpdb;
+
+		$table = self::table();
+		$rows  = $wpdb->get_col( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->prepare(
+				"SELECT legacy_id FROM {$table} WHERE legacy_source = %s AND legacy_id > 0", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				sanitize_key( $source )
+			)
+		);
+
+		return is_array( $rows ) ? array_map( 'absint', $rows ) : array();
+	}
+
+	/**
+	 * Inserts a mapped legacy row without reactivating existing waitlists.
+	 *
+	 * @since 0.1.1
+	 * @param array<string,mixed> $mapped Mapped row.
+	 * @return bool
+	 */
+	public static function import_mapped( array $mapped ) {
+		$email        = self::normalize_email( isset( $mapped['email'] ) ? $mapped['email'] : '' );
+		$product_id   = absint( isset( $mapped['product_id'] ) ? $mapped['product_id'] : 0 );
+		$variation_id = absint( isset( $mapped['variation_id'] ) ? $mapped['variation_id'] : 0 );
+
+		if ( ! $email || ! $product_id ) {
+			return false;
+		}
+
+		if ( self::find( $email, $product_id, $variation_id ) ) {
+			return false;
+		}
+
+		$now    = self::now();
+		$status = isset( $mapped['status'] ) ? sanitize_key( $mapped['status'] ) : 'active';
+		$row    = array(
+			'product_id'         => $product_id,
+			'variation_id'       => $variation_id,
+			'user_id'            => absint( isset( $mapped['user_id'] ) ? $mapped['user_id'] : 0 ),
+			'email'              => $email,
+			'status'             => $status,
+			'language'           => isset( $mapped['language'] ) ? sanitize_text_field( $mapped['language'] ) : '',
+			'attributes'         => self::encode_attributes( array() ),
+			'source'             => isset( $mapped['source'] ) ? sanitize_key( $mapped['source'] ) : 'pixm',
+			'consent'            => 1,
+			'consent_at'         => $now,
+			'created_at'         => ! empty( $mapped['created_at'] ) ? $mapped['created_at'] : $now,
+			'confirmed_at'       => ! empty( $mapped['confirmed_at'] ) ? $mapped['confirmed_at'] : $now,
+			'queued_at'          => null,
+			'notified_at'        => ! empty( $mapped['notified_at'] ) ? $mapped['notified_at'] : null,
+			'unsubscribed_at'    => null,
+			'converted_at'       => null,
+			'converted_order_id' => 0,
+			'token_key'          => self::new_token_key(),
+			'legacy_source'      => isset( $mapped['legacy_source'] ) ? sanitize_key( $mapped['legacy_source'] ) : '',
+			'legacy_id'          => absint( isset( $mapped['legacy_id'] ) ? $mapped['legacy_id'] : 0 ),
+		);
+
+		global $wpdb;
+
+		$inserted = $wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+			self::table(),
+			$row,
+			array( '%d', '%d', '%d', '%s', '%s', '%s', '%s', '%s', '%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%d', '%s', '%s', '%d' )
+		);
+
+		if ( $inserted ) {
+			wp_cache_delete( 'oli_bis_count_' . $product_id, 'oli_bis' );
+		}
+
+		return false !== $inserted;
+	}
+
+	/**
+	 * Deletes notified rows older than N days (PixM auto-cleanup equivalent).
+	 *
+	 * @since 0.1.1
+	 * @param int $days Days.
+	 * @return int
+	 */
+	public static function delete_notified_older_than( $days ) {
+		global $wpdb;
+
+		$table  = self::table();
+		$cutoff = gmdate( 'Y-m-d H:i:s', time() - ( absint( $days ) * DAY_IN_SECONDS ) );
+
+		$deleted = $wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->prepare(
+				"DELETE FROM {$table} WHERE status = %s AND notified_at IS NOT NULL AND notified_at < %s", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				'notified',
+				$cutoff
+			)
+		);
+
+		return (int) $deleted;
+	}
+
+	/**
+	 * Distinct product IDs that have subscriptions (for admin filters).
+	 *
+	 * @since 0.1.1
+	 * @param int $limit Limit.
+	 * @return array<int,int>
+	 */
+	public static function distinct_product_ids( $limit = 200 ) {
+		global $wpdb;
+
+		$table = self::table();
+		$limit = absint( $limit );
+		$sql   = "SELECT DISTINCT product_id FROM {$table} ORDER BY product_id ASC LIMIT {$limit}";
+		$rows  = $wpdb->get_col( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
+
+		return is_array( $rows ) ? array_map( 'absint', $rows ) : array();
+	}
+
+	/**
 	 * Encodes attributes to JSON.
 	 *
 	 * @since 0.1.0

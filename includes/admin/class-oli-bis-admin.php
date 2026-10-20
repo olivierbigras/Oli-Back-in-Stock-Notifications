@@ -117,12 +117,32 @@ class Oli_BIS_Admin {
 	 * @return void
 	 */
 	public function handle_actions() {
-		if ( empty( $_REQUEST['page'] ) || 'oli-bis' !== sanitize_key( wp_unslash( $_REQUEST['page'] ) ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$page = isset( $_REQUEST['page'] ) ? sanitize_key( wp_unslash( $_REQUEST['page'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+
+		if ( ! in_array( $page, array( 'oli-bis', 'oli-bis-dashboard' ), true ) ) {
 			return;
 		}
 
 		if ( ! current_user_can( 'manage_woocommerce' ) ) {
 			return;
+		}
+
+		if ( ! empty( $_POST['oli_bis_migrate'] ) ) {
+			check_admin_referer( 'oli_bis_migrate' );
+			$dry    = 'dry' === sanitize_key( wp_unslash( $_POST['oli_bis_migrate'] ) );
+			$report = Oli_BIS_Migrator::run( $dry );
+			set_transient( 'oli_bis_migrate_report', $report, MINUTE_IN_SECONDS );
+			wp_safe_redirect( admin_url( 'admin.php?page=oli-bis-dashboard&oli_bis_migrated=1' ) );
+			exit;
+		}
+
+		if ( ! empty( $_GET['oli_bis_cleanup_notified'] ) ) {
+			check_admin_referer( 'oli_bis_cleanup_notified' );
+			$days    = absint( Oli_BIS_Settings::get( 'cleanup_notified_days', 30 ) );
+			$deleted = Oli_BIS_Repository::delete_notified_older_than( $days );
+			set_transient( 'oli_bis_cleanup_count', $deleted, MINUTE_IN_SECONDS );
+			wp_safe_redirect( admin_url( 'admin.php?page=oli-bis&oli_bis_cleaned=1' ) );
+			exit;
 		}
 
 		if ( ! empty( $_GET['oli_bis_export'] ) ) {
@@ -311,6 +331,19 @@ class Oli_BIS_Admin {
 			echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Notifications updated.', 'oli-back-in-stock-notifications' ) . '</p></div>';
 		}
 
+		if ( ! empty( $_GET['oli_bis_cleaned'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$deleted = (int) get_transient( 'oli_bis_cleanup_count' );
+			echo '<div class="notice notice-success is-dismissible"><p>';
+			echo esc_html(
+				sprintf(
+					/* translators: %d: deleted row count */
+					_n( 'Deleted %d sent notification.', 'Deleted %d sent notifications.', $deleted, 'oli-back-in-stock-notifications' ),
+					$deleted
+				)
+			);
+			echo '</p></div>';
+		}
+
 		echo '<h2>' . esc_html__( 'Add notification', 'oli-back-in-stock-notifications' ) . '</h2>';
 		echo '<form method="post" class="oli-bis-add-form">';
 		wp_nonce_field( 'oli_bis_admin', 'oli_bis_admin_nonce' );
@@ -325,8 +358,16 @@ class Oli_BIS_Admin {
 		if ( ! empty( $_GET['status'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			echo '<input type="hidden" name="status" value="' . esc_attr( sanitize_key( wp_unslash( $_GET['status'] ) ) ) . '" />'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		}
-		echo '<label class="screen-reader-text" for="oli-bis-product-search">' . esc_html__( 'Product ID', 'oli-back-in-stock-notifications' ) . '</label>';
-		echo '<input type="number" id="oli-bis-product-search" name="product_id" value="' . esc_attr( (string) ( isset( $_GET['product_id'] ) ? absint( wp_unslash( $_GET['product_id'] ) ) : 0 ) ) . '" placeholder="' . esc_attr__( 'Product ID', 'oli-back-in-stock-notifications' ) . '" /> '; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$oli_bis_product_filter = isset( $_GET['product_id'] ) ? absint( wp_unslash( $_GET['product_id'] ) ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		echo '<label class="screen-reader-text" for="oli-bis-product-search">' . esc_html__( 'Filter by product', 'oli-back-in-stock-notifications' ) . '</label>';
+		echo '<select id="oli-bis-product-search" name="product_id">';
+		echo '<option value="0">' . esc_html__( 'All products', 'oli-back-in-stock-notifications' ) . '</option>';
+		foreach ( Oli_BIS_Repository::distinct_product_ids() as $oli_bis_pid ) {
+			$oli_bis_prod = wc_get_product( $oli_bis_pid );
+			$oli_bis_name = $oli_bis_prod ? $oli_bis_prod->get_name() : (string) $oli_bis_pid;
+			echo '<option value="' . esc_attr( (string) $oli_bis_pid ) . '"' . selected( $oli_bis_product_filter, $oli_bis_pid, false ) . '>' . esc_html( $oli_bis_name ) . '</option>';
+		}
+		echo '</select> ';
 		$table->search_box( __( 'Search emails', 'oli-back-in-stock-notifications' ), 'oli-bis' );
 		echo '</form>';
 
@@ -334,6 +375,9 @@ class Oli_BIS_Admin {
 		wp_nonce_field( 'oli_bis_admin', 'oli_bis_admin_nonce' );
 		$table->display();
 		echo '</form>';
+
+		$cleanup_url = wp_nonce_url( admin_url( 'admin.php?page=oli-bis&oli_bis_cleanup_notified=1' ), 'oli_bis_cleanup_notified' );
+		echo '<p><a class="button" href="' . esc_url( $cleanup_url ) . '">' . esc_html__( 'Cleanup old sent notifications', 'oli-back-in-stock-notifications' ) . '</a></p>';
 		echo '</div>';
 	}
 

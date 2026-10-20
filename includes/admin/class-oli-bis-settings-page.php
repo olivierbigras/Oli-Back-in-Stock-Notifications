@@ -200,6 +200,50 @@ class Oli_BIS_Settings_Page {
 				'id'   => 'oli_bis_catalog',
 			),
 			array(
+				'title' => __( 'Email templates', 'oli-back-in-stock-notifications' ),
+				'desc'  => __( 'Optional bodies imported from the PixM plugin. Leave empty to use the default WooCommerce email content. Placeholders: {product_name}, {product_url}, {site_name}.', 'oli-back-in-stock-notifications' ),
+				'type'  => 'title',
+				'id'    => 'oli_bis_email_templates',
+			),
+			array(
+				'title'   => __( 'Signup confirmation body', 'oli-back-in-stock-notifications' ),
+				'id'      => 'oli_bis_signup_body',
+				'type'    => 'textarea',
+				'css'     => 'min-width:400px; min-height:120px;',
+				'default' => $settings['signup_body'],
+				'value'   => $settings['signup_body'],
+			),
+			array(
+				'title'   => __( 'Back-in-stock email body', 'oli-back-in-stock-notifications' ),
+				'id'      => 'oli_bis_notification_body',
+				'type'    => 'textarea',
+				'css'     => 'min-width:400px; min-height:120px;',
+				'default' => $settings['notification_body'],
+				'value'   => $settings['notification_body'],
+			),
+			array(
+				'title'   => __( 'Auto-cleanup sent notifications', 'oli-back-in-stock-notifications' ),
+				'desc'    => __( 'Delete notified subscriptions after the number of days below (PixM behaviour).', 'oli-back-in-stock-notifications' ),
+				'id'      => 'oli_bis_auto_cleanup_notified',
+				'type'    => 'checkbox',
+				'default' => $settings['auto_cleanup_notified'],
+				'value'   => $settings['auto_cleanup_notified'],
+			),
+			array(
+				'title'             => __( 'Delete sent notifications after (days)', 'oli-back-in-stock-notifications' ),
+				'id'                => 'oli_bis_cleanup_notified_days',
+				'type'              => 'number',
+				'custom_attributes' => array(
+					'min' => 1,
+				),
+				'default'           => $settings['cleanup_notified_days'],
+				'value'             => $settings['cleanup_notified_days'],
+			),
+			array(
+				'type' => 'sectionend',
+				'id'   => 'oli_bis_email_templates',
+			),
+			array(
 				'title' => __( 'Data', 'oli-back-in-stock-notifications' ),
 				'type'  => 'title',
 				'id'    => 'oli_bis_data',
@@ -259,6 +303,10 @@ class Oli_BIS_Settings_Page {
 			'catalog_prompt'           => ! empty( $_POST['oli_bis_catalog_prompt'] ) ? 'yes' : 'no',
 			'catalog_text'             => isset( $_POST['oli_bis_catalog_text'] ) ? sanitize_text_field( wp_unslash( $_POST['oli_bis_catalog_text'] ) ) : '',
 			'delete_data_on_uninstall' => ! empty( $_POST['oli_bis_delete_data_on_uninstall'] ) ? 'yes' : 'no',
+			'auto_cleanup_notified'    => ! empty( $_POST['oli_bis_auto_cleanup_notified'] ) ? 'yes' : 'no',
+			'cleanup_notified_days'    => isset( $_POST['oli_bis_cleanup_notified_days'] ) ? absint( wp_unslash( $_POST['oli_bis_cleanup_notified_days'] ) ) : 30,
+			'notification_body'        => isset( $_POST['oli_bis_notification_body'] ) ? wp_kses_post( wp_unslash( $_POST['oli_bis_notification_body'] ) ) : '',
+			'signup_body'              => isset( $_POST['oli_bis_signup_body'] ) ? wp_kses_post( wp_unslash( $_POST['oli_bis_signup_body'] ) ) : '',
 		);
 
 		Oli_BIS_Settings::update( $input );

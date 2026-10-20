@@ -59,6 +59,7 @@ class Oli_BIS_Dashboard {
 		$this->product_list( __( 'Most wanted', 'oli-back-in-stock-notifications' ), $wanted );
 		$this->product_list( __( 'Longest waiting', 'oli-back-in-stock-notifications' ), $overdue, true );
 		echo '</div>';
+		$this->render_migration();
 		echo '</div>';
 	}
 
@@ -104,5 +105,59 @@ class Oli_BIS_Dashboard {
 		}
 
 		echo '</ul></div>';
+	}
+
+	/**
+	 * PixM import tools. Never deletes the source table.
+	 *
+	 * @since 0.1.1
+	 * @return void
+	 */
+	private function render_migration() {
+		$detect = Oli_BIS_Migrator::detect();
+
+		echo '<h2>' . esc_html__( 'PixM data import', 'oli-back-in-stock-notifications' ) . '</h2>';
+
+		if ( ! empty( $_GET['oli_bis_migrated'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$report = get_transient( 'oli_bis_migrate_report' );
+			if ( is_array( $report ) ) {
+				echo '<div class="notice notice-success"><p>';
+				echo esc_html(
+					sprintf(
+						/* translators: 1: import count, 2: skip count, 3: invalid count */
+						__( 'Import result — import: %1$d, skip: %2$d, invalid: %3$d. Source data was not deleted.', 'oli-back-in-stock-notifications' ),
+						(int) $report['import'],
+						(int) $report['skip'],
+						(int) $report['invalid']
+					)
+				);
+				if ( ! empty( $report['dry_run'] ) ) {
+					echo ' ' . esc_html__( 'This was a dry run.', 'oli-back-in-stock-notifications' );
+				}
+				echo '</p></div>';
+			}
+		}
+
+		if ( empty( $detect['table_exists'] ) ) {
+			echo '<p>' . esc_html__( 'No PixM table (wc_back_in_stock_notifications) was found on this site.', 'oli-back-in-stock-notifications' ) . '</p>';
+			return;
+		}
+
+		echo '<p>';
+		echo esc_html(
+			sprintf(
+				/* translators: 1: table name, 2: row count */
+				__( 'Found %1$s with %2$d subscriber rows. Import copies them into this plugin and leaves the original table untouched.', 'oli-back-in-stock-notifications' ),
+				$detect['table'],
+				(int) $detect['row_count']
+			)
+		);
+		echo '</p>';
+
+		echo '<form method="post">';
+		wp_nonce_field( 'oli_bis_migrate' );
+		echo '<button type="submit" class="button" name="oli_bis_migrate" value="dry">' . esc_html__( 'Dry-run import', 'oli-back-in-stock-notifications' ) . '</button> ';
+		echo '<button type="submit" class="button button-primary" name="oli_bis_migrate" value="run">' . esc_html__( 'Import subscribers', 'oli-back-in-stock-notifications' ) . '</button>';
+		echo '</form>';
 	}
 }

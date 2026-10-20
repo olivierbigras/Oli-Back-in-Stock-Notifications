@@ -61,7 +61,7 @@ class Oli_BIS_Ajax {
 		$source       = isset( $_POST['source'] ) ? sanitize_key( wp_unslash( $_POST['source'] ) ) : 'form';
 		$product      = wc_get_product( $variation_id ? $variation_id : $product_id );
 
-		if ( ! $product || ! Oli_BIS_Compatibility::should_show_form( $product ) ) {
+		if ( ! $product || ! Oli_BIS_Compatibility::is_supported_product( $product ) || ! Oli_BIS_Compatibility::is_enabled_for_product( $product ) ) {
 			wp_send_json_error(
 				array(
 					'message' => __( 'Notifications are not available for this product.', 'oli-back-in-stock-notifications' ),

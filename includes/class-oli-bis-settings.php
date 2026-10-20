@@ -43,6 +43,10 @@ class Oli_BIS_Settings {
 			'rate_limit_max'           => 8,
 			'rate_limit_window'        => 900,
 			'delete_data_on_uninstall' => 'no',
+			'auto_cleanup_notified'    => 'no',
+			'cleanup_notified_days'    => 30,
+			'notification_body'        => '',
+			'signup_body'              => '',
 		);
 	}
 
@@ -114,6 +118,7 @@ class Oli_BIS_Settings {
 			'catalog_prompt',
 			'admin_signup_email',
 			'delete_data_on_uninstall',
+			'auto_cleanup_notified',
 		);
 
 		foreach ( $yes_no as $key ) {
@@ -125,12 +130,19 @@ class Oli_BIS_Settings {
 		$output['batch_size']             = isset( $input['batch_size'] ) ? min( 200, max( 1, absint( $input['batch_size'] ) ) ) : $defaults['batch_size'];
 		$output['rate_limit_max']         = isset( $input['rate_limit_max'] ) ? min( 100, max( 1, absint( $input['rate_limit_max'] ) ) ) : $defaults['rate_limit_max'];
 		$output['rate_limit_window']      = isset( $input['rate_limit_window'] ) ? min( 86400, max( 60, absint( $input['rate_limit_window'] ) ) ) : $defaults['rate_limit_window'];
+		$output['cleanup_notified_days']  = isset( $input['cleanup_notified_days'] ) ? max( 1, absint( $input['cleanup_notified_days'] ) ) : $defaults['cleanup_notified_days'];
 
 		$text_keys = array( 'gdpr_text', 'form_text', 'form_text_signed_up', 'button_text', 'catalog_text' );
 
 		foreach ( $text_keys as $key ) {
 			if ( isset( $input[ $key ] ) ) {
 				$output[ $key ] = self::sanitize_text( $input[ $key ] );
+			}
+		}
+
+		foreach ( array( 'notification_body', 'signup_body' ) as $key ) {
+			if ( isset( $input[ $key ] ) ) {
+				$output[ $key ] = self::sanitize_template( $input[ $key ] );
 			}
 		}
 
@@ -152,6 +164,23 @@ class Oli_BIS_Settings {
 		}
 
 		return trim( strip_tags( $value ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.strip_tags_strip_tags
+	}
+
+	/**
+	 * Sanitizes a multiline email template.
+	 *
+	 * @since 0.1.1
+	 * @param mixed $value Raw value.
+	 * @return string
+	 */
+	public static function sanitize_template( $value ) {
+		$value = is_string( $value ) ? $value : '';
+
+		if ( function_exists( 'wp_kses_post' ) ) {
+			return wp_kses_post( $value );
+		}
+
+		return trim( $value );
 	}
 
 	/**
