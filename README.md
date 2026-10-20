@@ -7,7 +7,7 @@ WordPress plugin that lets customers join a waitlist for out-of-stock WooCommerc
 - **Author:** [Olivier Bigras](https://olivierbigras.com/) (`bigrat95`)
 - **License:** GPLv2 or later
 - **Requires:** WordPress 6.5+, WooCommerce 9.0+, PHP 7.4+
-- **Tested:** WordPress 7.1, WooCommerce 11.1
+- **Tested:** WordPress 7.1, WooCommerce 11.2
 
 Install the plugin at the repository root (this folder is the plugin).
 
