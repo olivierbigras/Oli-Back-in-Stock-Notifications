@@ -84,3 +84,11 @@ GitHub Actions runs PHP syntax checks (7.4 / 8.1 / 8.3), PHPCS WordPress, and PH
 10. Export CSV, delete a row, and send a manual notification from the admin list.
 11. Place `[oli_bis_notify_form]` on a page and the block in the editor.
 12. Switch the store to French (or TranslatePress `fr`) and confirm the form/email strings are translated.
+
+## Verified locally
+
+On WordPress **7.1.3** + WooCommerce **11.2.1** (PHP 8.3):
+
+- Plugin activates and creates `wp_oli_bis_subscriptions` + `wp_oli_bis_stats_daily`
+- Guest signup → restock → Action Scheduler queue → notification email class → status `notified`
+- Variation IDs, double-opt-in confirm, signed unsubscribe URL, shortcode, and block registration
