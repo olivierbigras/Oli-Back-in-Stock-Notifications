@@ -27,7 +27,7 @@ class Oli_BIS_Tokens {
 	public static function create( array $payload, $secret, $ttl = 0 ) {
 		$data = array(
 			'p' => $payload,
-			'e' => $ttl > 0 ? time() + (int) $ttl : 0,
+			'e' => 0 !== (int) $ttl ? time() + (int) $ttl : 0,
 		);
 
 		$json = self::encode( $data );
@@ -114,7 +114,7 @@ class Oli_BIS_Tokens {
 	 * @return string
 	 */
 	public static function base64url_encode( $value ) {
-		return rtrim( strtr( base64_encode( $value ), '+/', '-_' ), '=' );
+		return rtrim( strtr( base64_encode( $value ), '+/', '-_' ), '=' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- URL-safe token encoding.
 	}
 
 	/**

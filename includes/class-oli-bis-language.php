@@ -54,7 +54,7 @@ class Oli_BIS_Language {
 
 		if ( ! empty( $GLOBALS['TRP_LANGUAGE'] ) ) {
 			$GLOBALS['oli_bis_prev_trp_language'] = $GLOBALS['TRP_LANGUAGE'];
-			$GLOBALS['TRP_LANGUAGE']              = $locale;
+			$GLOBALS['TRP_LANGUAGE']              = $locale; // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- TranslatePress global.
 		}
 
 		if ( function_exists( 'switch_to_locale' ) ) {
@@ -82,7 +82,7 @@ class Oli_BIS_Language {
 	 */
 	public static function restore( $previous ) {
 		if ( isset( $GLOBALS['oli_bis_prev_trp_language'] ) ) {
-			$GLOBALS['TRP_LANGUAGE'] = $GLOBALS['oli_bis_prev_trp_language'];
+			$GLOBALS['TRP_LANGUAGE'] = $GLOBALS['oli_bis_prev_trp_language']; // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- TranslatePress global.
 			unset( $GLOBALS['oli_bis_prev_trp_language'] );
 		}
 

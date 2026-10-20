@@ -25,28 +25,28 @@ defined( 'ABSPATH' ) || exit;
 			</tr>
 		</thead>
 		<tbody>
-			<?php foreach ( $subscriptions as $subscription ) : ?>
+			<?php foreach ( $subscriptions as $oli_bis_subscription ) : ?>
 				<?php
-				$product = wc_get_product( $subscription->get_target_product_id() );
-				$name    = $product ? $product->get_name() : (string) $subscription->get_target_product_id();
+				$oli_bis_product = wc_get_product( $oli_bis_subscription->get_target_product_id() );
+				$oli_bis_name    = $oli_bis_product ? $oli_bis_product->get_name() : (string) $oli_bis_subscription->get_target_product_id();
 				?>
 				<tr>
 					<td data-title="<?php esc_attr_e( 'Product', 'oli-back-in-stock-notifications' ); ?>">
-						<?php if ( $product ) : ?>
-							<a href="<?php echo esc_url( $product->get_permalink() ); ?>"><?php echo esc_html( $name ); ?></a>
+						<?php if ( $oli_bis_product ) : ?>
+							<a href="<?php echo esc_url( $oli_bis_product->get_permalink() ); ?>"><?php echo esc_html( $oli_bis_name ); ?></a>
 						<?php else : ?>
-							<?php echo esc_html( $name ); ?>
+							<?php echo esc_html( $oli_bis_name ); ?>
 						<?php endif; ?>
 					</td>
-					<td data-title="<?php esc_attr_e( 'Status', 'oli-back-in-stock-notifications' ); ?>"><?php echo esc_html( $subscription->get_status() ); ?></td>
-					<td data-title="<?php esc_attr_e( 'Signed up', 'oli-back-in-stock-notifications' ); ?>"><?php echo esc_html( (string) $subscription->get( 'created_at', '' ) ); ?></td>
+					<td data-title="<?php esc_attr_e( 'Status', 'oli-back-in-stock-notifications' ); ?>"><?php echo esc_html( $oli_bis_subscription->get_status() ); ?></td>
+					<td data-title="<?php esc_attr_e( 'Signed up', 'oli-back-in-stock-notifications' ); ?>"><?php echo esc_html( (string) $oli_bis_subscription->get( 'created_at', '' ) ); ?></td>
 					<td data-title="<?php esc_attr_e( 'Actions', 'oli-back-in-stock-notifications' ); ?>">
-						<?php if ( in_array( $subscription->get_status(), array( 'pending', 'active', 'queued' ), true ) ) : ?>
+						<?php if ( in_array( $oli_bis_subscription->get_status(), array( 'pending', 'active', 'queued' ), true ) ) : ?>
 							<form method="post">
 								<?php wp_nonce_field( 'oli_bis_account', 'oli_bis_account_nonce' ); ?>
-								<input type="hidden" name="subscription_id" value="<?php echo esc_attr( (string) $subscription->get_id() ); ?>" />
+								<input type="hidden" name="subscription_id" value="<?php echo esc_attr( (string) $oli_bis_subscription->get_id() ); ?>" />
 								<button type="submit" name="oli_bis_account_action" value="unsubscribe" class="button"><?php esc_html_e( 'Unsubscribe', 'oli-back-in-stock-notifications' ); ?></button>
-								<?php if ( 'pending' === $subscription->get_status() ) : ?>
+								<?php if ( 'pending' === $oli_bis_subscription->get_status() ) : ?>
 									<button type="submit" name="oli_bis_account_action" value="resend" class="button"><?php esc_html_e( 'Resend verification', 'oli-back-in-stock-notifications' ); ?></button>
 								<?php endif; ?>
 							</form>

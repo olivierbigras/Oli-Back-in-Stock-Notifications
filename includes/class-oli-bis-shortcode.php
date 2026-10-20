@@ -44,7 +44,7 @@ class Oli_BIS_Shortcode {
 		$product_id = absint( $atts['product_id'] );
 
 		if ( ! $product_id && function_exists( 'wc_get_product' ) ) {
-			$current = wc_get_product();
+			$current    = wc_get_product();
 			$product_id = $current ? $current->get_id() : 0;
 		}
 

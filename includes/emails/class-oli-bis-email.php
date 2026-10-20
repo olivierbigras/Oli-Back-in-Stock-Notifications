@@ -67,9 +67,9 @@ abstract class Oli_BIS_Email extends WC_Email {
 			return false;
 		}
 
-		$this->subscription = $subscription;
-		$this->product      = $product;
-		$this->recipient    = $subscription->get_email();
+		$this->subscription                      = $subscription;
+		$this->product                           = $product;
+		$this->recipient                         = $subscription->get_email();
 		$this->placeholders['{product_name}']    = $product->get_name();
 		$this->placeholders['{product_url}']     = $product->get_permalink();
 		$this->placeholders['{unsubscribe_url}'] = Oli_BIS_Public_Actions::url( $subscription, 'unsubscribe' );
@@ -117,12 +117,12 @@ abstract class Oli_BIS_Email extends WC_Email {
 	 */
 	protected function template_args() {
 		return array(
-			'email_heading' => $this->get_heading(),
-			'product'       => $this->product,
-			'subscription'  => $this->subscription,
-			'email'         => $this,
-			'product_url'   => $this->placeholders['{product_url}'],
-			'confirm_url'   => $this->placeholders['{confirm_url}'],
+			'email_heading'   => $this->get_heading(),
+			'product'         => $this->product,
+			'subscription'    => $this->subscription,
+			'email'           => $this,
+			'product_url'     => $this->placeholders['{product_url}'],
+			'confirm_url'     => $this->placeholders['{confirm_url}'],
 			'unsubscribe_url' => $this->placeholders['{unsubscribe_url}'],
 		);
 	}

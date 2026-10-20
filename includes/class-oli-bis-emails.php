@@ -34,10 +34,10 @@ class Oli_BIS_Emails {
 	 * @return array<string,WC_Email>
 	 */
 	public function register_emails( $emails ) {
-		$emails['Oli_BIS_Email_Signup']         = new Oli_BIS_Email_Signup();
-		$emails['Oli_BIS_Email_Verification']   = new Oli_BIS_Email_Verification();
-		$emails['Oli_BIS_Email_Notification']   = new Oli_BIS_Email_Notification();
-		$emails['Oli_BIS_Email_Admin_Signup']   = new Oli_BIS_Email_Admin_Signup();
+		$emails['Oli_BIS_Email_Signup']       = new Oli_BIS_Email_Signup();
+		$emails['Oli_BIS_Email_Verification'] = new Oli_BIS_Email_Verification();
+		$emails['Oli_BIS_Email_Notification'] = new Oli_BIS_Email_Notification();
+		$emails['Oli_BIS_Email_Admin_Signup'] = new Oli_BIS_Email_Admin_Signup();
 
 		return $emails;
 	}

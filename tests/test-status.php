@@ -33,4 +33,12 @@ class Oli_BIS_Status_Test extends TestCase {
 		$this->assertFalse( Oli_BIS_Status::is_waiting( 'notified' ) );
 		$this->assertFalse( Oli_BIS_Status::is_waiting( 'pending' ) );
 	}
+
+	public function test_signup_restock_conversion_path() {
+		$path = array( 'pending', 'active', 'queued', 'notified', 'converted' );
+
+		for ( $i = 0; $i < count( $path ) - 1; $i++ ) {
+			$this->assertTrue( Oli_BIS_Status::can_transition( $path[ $i ], $path[ $i + 1 ] ) );
+		}
+	}
 }

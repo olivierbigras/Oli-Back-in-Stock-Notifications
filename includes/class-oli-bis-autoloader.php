@@ -29,15 +29,15 @@ class Oli_BIS_Autoloader {
 	 * Loads a class file when needed.
 	 *
 	 * @since 0.1.0
-	 * @param string $class Class name.
+	 * @param string $class_name Class name.
 	 * @return void
 	 */
-	public static function load( $class ) {
-		if ( 0 !== strpos( $class, 'Oli_BIS_' ) ) {
+	public static function load( $class_name ) {
+		if ( 0 !== strpos( $class_name, 'Oli_BIS_' ) ) {
 			return;
 		}
 
-		$relative = 'class-' . str_replace( '_', '-', strtolower( $class ) ) . '.php';
+		$relative = 'class-' . str_replace( '_', '-', strtolower( $class_name ) ) . '.php';
 		$paths    = array(
 			OLI_BIS_PATH . 'includes/' . $relative,
 			OLI_BIS_PATH . 'includes/admin/' . $relative,

@@ -66,7 +66,7 @@ class Oli_BIS_Email_Notification extends Oli_BIS_Email {
 			return false;
 		}
 
-		$this->placeholders['{product_url}'] = Oli_BIS_Attribution::product_url( $subscription, $this->product->get_permalink() );
+		$this->placeholders['{product_url}']     = Oli_BIS_Attribution::product_url( $subscription, $this->product->get_permalink() );
 		$this->placeholders['{unsubscribe_url}'] = Oli_BIS_Public_Actions::url( $subscription, 'unsubscribe', true );
 
 		$attributes = $subscription->get_attributes();

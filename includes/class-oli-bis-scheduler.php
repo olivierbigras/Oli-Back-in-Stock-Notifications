@@ -55,7 +55,7 @@ class Oli_BIS_Scheduler {
 			return;
 		}
 
-		do_action( self::PREPARE_HOOK, $product_id, $variation_id );
+		do_action( 'oli_bis_prepare_restock', $product_id, $variation_id );
 	}
 
 	/**
@@ -154,7 +154,7 @@ class Oli_BIS_Scheduler {
 			return;
 		}
 
-		do_action( self::BATCH_HOOK, $product_id, $variation_id );
+		do_action( 'oli_bis_process_restock_batch', $product_id, $variation_id );
 	}
 
 	/**

@@ -44,8 +44,8 @@ class Oli_BIS_Stats {
 
 		global $wpdb;
 
-		$table = self::table();
-		$date  = gmdate( 'Y-m-d' );
+		$table  = self::table();
+		$date   = gmdate( 'Y-m-d' );
 		$amount = absint( $amount );
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching

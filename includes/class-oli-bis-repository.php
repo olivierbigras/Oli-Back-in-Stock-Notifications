@@ -381,7 +381,7 @@ class Oli_BIS_Repository {
 
 		if ( ! empty( $values ) ) {
 			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-			$total = (int) $wpdb->get_var( $wpdb->prepare( $count_sql, $values ) );
+			$total    = (int) $wpdb->get_var( $wpdb->prepare( $count_sql, $values ) );
 			$values[] = $per_page;
 			$values[] = $offset;
 			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
@@ -511,7 +511,7 @@ class Oli_BIS_Repository {
 	public static function delete_unverified_older_than( $days ) {
 		global $wpdb;
 
-		$table = self::table();
+		$table  = self::table();
 		$cutoff = gmdate( 'Y-m-d H:i:s', time() - ( absint( $days ) * DAY_IN_SECONDS ) );
 
 		$deleted = $wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching

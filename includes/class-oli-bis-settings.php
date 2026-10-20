@@ -25,24 +25,24 @@ class Oli_BIS_Settings {
 	 */
 	public static function defaults() {
 		return array(
-			'double_optin'              => 'no',
-			'delete_unverified_days'    => 7,
-			'require_account'           => 'no',
-			'allow_backorder'           => 'no',
-			'min_stock'                 => 0,
-			'gdpr_checkbox'             => 'no',
-			'gdpr_text'                 => 'I agree to receive a back-in-stock email for this product.',
-			'show_count'                => 'no',
-			'form_text'                 => 'Notify me when this product is back in stock.',
-			'form_text_signed_up'       => 'You will be notified when this product is back in stock.',
-			'button_text'               => 'Notify me',
-			'catalog_prompt'            => 'no',
-			'catalog_text'              => 'Get notified when back in stock',
-			'admin_signup_email'        => 'no',
-			'batch_size'                => 50,
-			'rate_limit_max'            => 8,
-			'rate_limit_window'         => 900,
-			'delete_data_on_uninstall'  => 'no',
+			'double_optin'             => 'no',
+			'delete_unverified_days'   => 7,
+			'require_account'          => 'no',
+			'allow_backorder'          => 'no',
+			'min_stock'                => 0,
+			'gdpr_checkbox'            => 'no',
+			'gdpr_text'                => 'I agree to receive a back-in-stock email for this product.',
+			'show_count'               => 'no',
+			'form_text'                => 'Notify me when this product is back in stock.',
+			'form_text_signed_up'      => 'You will be notified when this product is back in stock.',
+			'button_text'              => 'Notify me',
+			'catalog_prompt'           => 'no',
+			'catalog_text'             => 'Get notified when back in stock',
+			'admin_signup_email'       => 'no',
+			'batch_size'               => 50,
+			'rate_limit_max'           => 8,
+			'rate_limit_window'        => 900,
+			'delete_data_on_uninstall' => 'no',
 		);
 	}
 
@@ -69,18 +69,18 @@ class Oli_BIS_Settings {
 	 * Returns one setting.
 	 *
 	 * @since 0.1.0
-	 * @param string $key     Setting key.
-	 * @param mixed  $default Fallback.
+	 * @param string $key      Setting key.
+	 * @param mixed  $fallback Fallback.
 	 * @return mixed
 	 */
-	public static function get( $key, $default = null ) {
+	public static function get( $key, $fallback = null ) {
 		$all = self::all();
 
 		if ( array_key_exists( $key, $all ) ) {
 			return $all[ $key ];
 		}
 
-		return $default;
+		return $fallback;
 	}
 
 	/**

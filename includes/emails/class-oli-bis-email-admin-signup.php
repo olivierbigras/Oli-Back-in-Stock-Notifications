@@ -88,7 +88,7 @@ class Oli_BIS_Email_Admin_Signup extends Oli_BIS_Email {
 		}
 
 		$this->placeholders['{customer_email}'] = $subscription->get_email();
-		$this->recipient = $this->get_option( 'recipient', get_option( 'admin_email' ) );
+		$this->recipient                        = $this->get_option( 'recipient', get_option( 'admin_email' ) );
 		$this->setup_locale();
 		$this->send( $this->get_recipient(), $this->get_subject(), $this->get_content(), $this->get_headers(), $this->get_attachments() );
 		$this->restore_locale();

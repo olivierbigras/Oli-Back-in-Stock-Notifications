@@ -36,12 +36,12 @@ class Oli_BIS_Subscription {
 	 * Returns a field.
 	 *
 	 * @since 0.1.0
-	 * @param string $key     Field name.
-	 * @param mixed  $default Fallback.
+	 * @param string $key      Field name.
+	 * @param mixed  $fallback Fallback.
 	 * @return mixed
 	 */
-	public function get( $key, $default = null ) {
-		return array_key_exists( $key, $this->data ) ? $this->data[ $key ] : $default;
+	public function get( $key, $fallback = null ) {
+		return array_key_exists( $key, $this->data ) ? $this->data[ $key ] : $fallback;
 	}
 
 	/**

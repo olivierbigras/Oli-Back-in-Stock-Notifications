@@ -15,7 +15,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-do_action( 'woocommerce_email_header', $email_heading, $email );
+do_action( 'woocommerce_email_header', $email_heading, $email ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 ?>
 <p><?php esc_html_e( 'You asked us to let you know when this product is available again.', 'oli-back-in-stock-notifications' ); ?></p>
 <p>
@@ -28,4 +28,4 @@ do_action( 'woocommerce_email_header', $email_heading, $email );
 	<a href="<?php echo esc_url( $unsubscribe_url ); ?>"><?php esc_html_e( 'Unsubscribe from this notification', 'oli-back-in-stock-notifications' ); ?></a>
 </p>
 <?php
-do_action( 'woocommerce_email_footer', $email );
+do_action( 'woocommerce_email_footer', $email ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound

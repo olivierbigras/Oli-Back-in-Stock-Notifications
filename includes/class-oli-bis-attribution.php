@@ -169,7 +169,7 @@ class Oli_BIS_Attribution {
 	 * Whether the order includes the subscribed product.
 	 *
 	 * @since 0.1.0
-	 * @param WC_Order           $order        Order.
+	 * @param WC_Order             $order        Order.
 	 * @param Oli_BIS_Subscription $subscription Subscription.
 	 * @return bool
 	 */

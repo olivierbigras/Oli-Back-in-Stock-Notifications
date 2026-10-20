@@ -78,7 +78,7 @@ class Oli_BIS_List_Table extends WP_List_Table {
 		$views['all'] = $all;
 
 		foreach ( array( 'pending', 'active', 'queued', 'notified', 'unsubscribed' ) as $status ) {
-			$url = add_query_arg( 'status', $status, $base );
+			$url              = add_query_arg( 'status', $status, $base );
 			$views[ $status ] = '<a href="' . esc_url( $url ) . '"' . ( $current === $status ? ' class="current"' : '' ) . '>' . esc_html( ucfirst( $status ) ) . '</a>';
 		}
 
