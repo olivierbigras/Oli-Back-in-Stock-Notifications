@@ -1,0 +1,522 @@
+# Copyright (C) 2026 Olivier Bigras
+# This file is distributed under the GPL v2 or later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Oli Back in Stock Notifications for WooCommerce 0.1.0\n"
+"Report-Msgid-Bugs-To: https://github.com/olivierbigras/Oli-Back-in-Stock-Notifications\n"
+"POT-Creation-Date: 2026-10-20 13:00+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Domain: oli-back-in-stock-notifications\n"
+
+
+#: templates/form.php:51
+msgid "%d customer is waiting for this product."
+msgid_plural "%d customers are waiting for this product."
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/class-oli-bis-restock.php:128
+msgid "%d customer will be notified that this product is back in stock."
+msgid_plural "%d customers will be notified that this product is back in stock."
+msgstr[0] ""
+msgstr[1] ""
+
+#: templates/emails/plain/oli-bis-admin-signup.php:14
+#: templates/emails/oli-bis-admin-signup.php:18
+msgid "A customer signed up for a back-in-stock notification."
+msgstr ""
+
+#: includes/admin/class-oli-bis-list-table.php:50
+#: templates/my-account.php:24
+#: templates/my-account.php:43
+msgid "Actions"
+msgstr ""
+
+#: includes/admin/class-oli-bis-admin.php:314
+#: includes/admin/class-oli-bis-admin.php:320
+msgid "Add notification"
+msgstr ""
+
+#: includes/emails/class-oli-bis-email-admin-signup.php:26
+msgid "Admin stock notification signup"
+msgstr ""
+
+#: includes/admin/class-oli-bis-list-table.php:76
+msgid "All"
+msgstr ""
+
+#: includes/admin/class-oli-bis-product-admin.php:44
+msgid "Allow customers to sign up when this product is out of stock."
+msgstr ""
+
+#: includes/admin/class-oli-bis-product-admin.php:84
+msgid "Allow customers to sign up when this variation is out of stock."
+msgstr ""
+
+#: includes/admin/class-oli-bis-settings-page.php:84
+msgid "Allow signups on backorder"
+msgstr ""
+
+#: includes/admin/class-oli-bis-settings-page.php:160
+msgid "Already signed-up text"
+msgstr ""
+
+#: includes/emails/class-oli-bis-email-notification.php:54
+msgid "Back in stock"
+msgstr ""
+
+#: includes/emails/class-oli-bis-email-notification.php:26
+msgid "Back in stock notification"
+msgstr ""
+
+#: includes/emails/class-oli-bis-email-signup.php:26
+msgid "Back in stock signup confirmation"
+msgstr ""
+
+#: includes/emails/class-oli-bis-email-verification.php:26
+msgid "Back in stock signup verification"
+msgstr ""
+
+#: includes/admin/class-oli-bis-settings-page.php:168
+msgid "Button text"
+msgstr ""
+
+#: includes/admin/class-oli-bis-settings-page.php:179
+msgid "Catalog"
+msgstr ""
+
+#: includes/admin/class-oli-bis-settings-page.php:191
+msgid "Catalog prompt text"
+msgstr ""
+
+#: templates/emails/oli-bis-verification.php:23
+msgid "Confirm notification"
+msgstr ""
+
+#: includes/emails/class-oli-bis-email-verification.php:54
+msgid "Confirm your notification"
+msgstr ""
+
+#: templates/emails/plain/oli-bis-verification.php:16
+msgid "Confirm:"
+msgstr ""
+
+#: includes/admin/class-oli-bis-dashboard.php:36
+#: includes/admin/class-oli-bis-dashboard.php:44
+msgid "Conversions"
+msgstr ""
+
+#: includes/class-oli-bis-privacy.php:99
+msgid "Created"
+msgstr ""
+
+#: includes/admin/class-oli-bis-admin.php:318
+msgid "Customer email"
+msgstr ""
+
+#: includes/admin/class-oli-bis-settings-page.php:59
+msgid "Customers must confirm their email before the signup becomes active."
+msgstr ""
+
+#: includes/admin/class-oli-bis-dashboard.php:39
+msgid "Daily activity"
+msgstr ""
+
+#: includes/admin/class-oli-bis-settings-page.php:203
+msgid "Data"
+msgstr ""
+
+#: includes/admin/class-oli-bis-dashboard.php:41
+msgid "Date"
+msgstr ""
+
+#: includes/admin/class-oli-bis-list-table.php:107
+#: includes/admin/class-oli-bis-list-table.php:234
+msgid "Delete"
+msgstr ""
+
+#: includes/admin/class-oli-bis-settings-page.php:208
+msgid "Delete data on uninstall"
+msgstr ""
+
+#: includes/admin/class-oli-bis-settings-page.php:66
+msgid "Delete unverified signups after (days)"
+msgstr ""
+
+#: includes/admin/class-oli-bis-settings-page.php:130
+msgid "Display opt-in checkbox"
+msgstr ""
+
+#: includes/admin/class-oli-bis-settings-page.php:184
+msgid "Display sign-up prompt in catalog"
+msgstr ""
+
+#: includes/admin/class-oli-bis-settings-page.php:145
+msgid "Display signed-up customers"
+msgstr ""
+
+#: includes/class-oli-bis-privacy.php:87
+#: includes/admin/class-oli-bis-list-table.php:46
+msgid "Email"
+msgstr ""
+
+#: templates/form.php:32
+#: templates/form.php:33
+msgid "Email address"
+msgstr ""
+
+#: includes/admin/class-oli-bis-settings-page.php:103
+msgid "Email admin on new signups"
+msgstr ""
+
+#: includes/admin/class-oli-bis-settings-page.php:110
+msgid "Email batch size"
+msgstr ""
+
+#: includes/emails/class-oli-bis-email-admin-signup.php:71
+msgid "Enter recipients (comma separated) for this email. Defaults to the admin email."
+msgstr ""
+
+#: includes/admin/class-oli-bis-admin.php:307
+msgid "Export CSV"
+msgstr ""
+
+#: includes/admin/class-oli-bis-settings-page.php:53
+msgid "General"
+msgstr ""
+
+#: templates/emails/plain/oli-bis-notification.php:15
+#: templates/emails/oli-bis-notification.php:19
+msgid "Good news — this product is available again."
+msgstr ""
+
+#: includes/admin/class-oli-bis-settings-page.php:77
+msgid "Guests are asked to log in before signing up."
+msgstr ""
+
+#: includes/admin/class-oli-bis-dashboard.php:32
+msgid "Last 30 days"
+msgstr ""
+
+#: includes/admin/class-oli-bis-dashboard.php:60
+msgid "Longest waiting"
+msgstr ""
+
+#: templates/already-signed-up.php:14
+msgid "Manage your stock notifications"
+msgstr ""
+
+#: includes/admin/class-oli-bis-settings-page.php:92
+msgid "Minimum stock quantity"
+msgstr ""
+
+#: includes/admin/class-oli-bis-dashboard.php:59
+msgid "Most wanted"
+msgstr ""
+
+#: includes/emails/class-oli-bis-email-admin-signup.php:56
+msgid "New stock notification signup"
+msgstr ""
+
+#: includes/emails/class-oli-bis-email-admin-signup.php:46
+msgid "New stock notification signup for {product_name}"
+msgstr ""
+
+#: includes/admin/class-oli-bis-dashboard.php:90
+msgid "No data yet."
+msgstr ""
+
+#: includes/admin/class-oli-bis-list-table.php:244
+msgid "No stock notifications found."
+msgstr ""
+
+#: includes/class-oli-bis-my-account.php:114
+msgid "Notification cancelled."
+msgstr ""
+
+#: includes/admin/class-oli-bis-dashboard.php:43
+msgid "Notifications"
+msgstr ""
+
+#: includes/class-oli-bis-ajax.php:67
+msgid "Notifications are not available for this product."
+msgstr ""
+
+#: includes/admin/class-oli-bis-admin.php:69
+msgid "Notifications per page"
+msgstr ""
+
+#: includes/admin/class-oli-bis-dashboard.php:35
+msgid "Notifications sent"
+msgstr ""
+
+#: includes/admin/class-oli-bis-admin.php:311
+msgid "Notifications updated."
+msgstr ""
+
+#: includes/admin/class-oli-bis-list-table.php:234
+msgid "Notify"
+msgstr ""
+
+#: oli-back-in-stock-notifications.php:86
+msgid "Oli Back in Stock Notifications for WooCommerce requires WooCommerce to be installed and active."
+msgstr ""
+
+#: includes/admin/class-oli-bis-settings-page.php:137
+msgid "Opt-in checkbox text"
+msgstr ""
+
+#: includes/class-oli-bis-frontend.php:61
+#: includes/class-oli-bis-ajax.php:150
+msgid "Please check your email to confirm this notification."
+msgstr ""
+
+#: templates/emails/plain/oli-bis-verification.php:14
+#: templates/emails/oli-bis-verification.php:18
+msgid "Please confirm that you want to be notified when this product is back in stock."
+msgstr ""
+
+#: includes/class-oli-bis-ajax.php:104
+msgid "Please confirm that you want to receive this notification."
+msgstr ""
+
+#: includes/emails/class-oli-bis-email-verification.php:44
+msgid "Please confirm your stock notification for {product_name}"
+msgstr ""
+
+#: includes/class-oli-bis-ajax.php:93
+msgid "Please enter a valid email address."
+msgstr ""
+
+#: includes/class-oli-bis-ajax.php:80
+msgid "Please log in to sign up for stock notifications."
+msgstr ""
+
+#: includes/admin/class-oli-bis-list-table.php:47
+#: templates/my-account.php:21
+#: templates/my-account.php:34
+msgid "Product"
+msgstr ""
+
+#: includes/class-oli-bis-privacy.php:91
+#: includes/admin/class-oli-bis-admin.php:319
+#: includes/admin/class-oli-bis-admin.php:328
+#: includes/admin/class-oli-bis-admin.php:329
+msgid "Product ID"
+msgstr ""
+
+#: includes/admin/class-oli-bis-settings-page.php:125
+msgid "Product page"
+msgstr ""
+
+#: includes/emails/class-oli-bis-email-admin-signup.php:69
+msgid "Recipient(s)"
+msgstr ""
+
+#: includes/admin/class-oli-bis-settings-page.php:209
+msgid "Remove the subscriber tables and settings when the plugin is deleted."
+msgstr ""
+
+#: includes/admin/class-oli-bis-settings-page.php:76
+msgid "Require account to sign up"
+msgstr ""
+
+#: includes/admin/class-oli-bis-settings-page.php:58
+msgid "Require double opt-in"
+msgstr ""
+
+#: templates/my-account.php:50
+msgid "Resend verification"
+msgstr ""
+
+#: includes/admin/class-oli-bis-admin.php:330
+msgid "Search emails"
+msgstr ""
+
+#: includes/admin/class-oli-bis-list-table.php:108
+msgid "Send notification"
+msgstr ""
+
+#: includes/emails/class-oli-bis-email-signup.php:27
+msgid "Sent to customers after they sign up to be notified when a product is restocked."
+msgstr ""
+
+#: includes/emails/class-oli-bis-email-notification.php:27
+msgid "Sent to customers when a product they signed up for is back in stock."
+msgstr ""
+
+#: includes/emails/class-oli-bis-email-verification.php:27
+msgid "Sent to customers who must confirm their stock notification signup."
+msgstr ""
+
+#: includes/emails/class-oli-bis-email-admin-signup.php:27
+msgid "Sent to the store admin when a customer signs up for a back-in-stock alert."
+msgstr ""
+
+#: templates/emails/oli-bis-notification.php:24
+msgid "Shop now"
+msgstr ""
+
+#: templates/emails/plain/oli-bis-notification.php:17
+msgid "Shop now:"
+msgstr ""
+
+#: includes/admin/class-oli-bis-settings-page.php:85
+msgid "Show the form on products that are available on backorder."
+msgstr ""
+
+#: includes/admin/class-oli-bis-settings-page.php:152
+msgid "Sign-up form text"
+msgstr ""
+
+#: includes/admin/class-oli-bis-list-table.php:49
+#: templates/my-account.php:23
+#: templates/my-account.php:42
+msgid "Signed up"
+msgstr ""
+
+#: includes/admin/class-oli-bis-dashboard.php:34
+#: includes/admin/class-oli-bis-dashboard.php:42
+msgid "Signups"
+msgstr ""
+
+#: includes/class-oli-bis-privacy.php:95
+#: includes/admin/class-oli-bis-list-table.php:48
+#: templates/my-account.php:22
+#: templates/my-account.php:41
+msgid "Status"
+msgstr ""
+
+#: includes/admin/class-oli-bis-dashboard.php:31
+#: includes/admin/class-oli-bis-admin.php:49
+msgid "Stock Notification dashboard"
+msgstr ""
+
+#: includes/admin/class-oli-bis-settings-page.php:38
+#: includes/admin/class-oli-bis-admin.php:40
+#: includes/admin/class-oli-bis-admin.php:41
+#: includes/admin/class-oli-bis-admin.php:306
+msgid "Stock Notifications"
+msgstr ""
+
+#: includes/admin/class-oli-bis-admin.php:50
+msgid "Stock dashboard"
+msgstr ""
+
+#: includes/emails/class-oli-bis-email-signup.php:54
+msgid "Stock notification saved"
+msgstr ""
+
+#: includes/class-oli-bis-privacy.php:38
+#: includes/class-oli-bis-privacy.php:54
+#: includes/class-oli-bis-privacy.php:83
+#: includes/class-oli-bis-my-account.php:70
+#: includes/class-oli-bis-my-account.php:75
+#: includes/admin/class-oli-bis-product-admin.php:43
+#: includes/admin/class-oli-bis-product-admin.php:83
+#: templates/my-account.php:13
+msgid "Stock notifications"
+msgstr ""
+
+#: includes/class-oli-bis-public-actions.php:44
+msgid "This link is invalid or has expired."
+msgstr ""
+
+#: includes/class-oli-bis-my-account.php:104
+msgid "This notification could not be updated."
+msgstr ""
+
+#: includes/class-oli-bis-public-actions.php:52
+msgid "This notification request could not be found."
+msgstr ""
+
+#: includes/class-oli-bis-ajax.php:53
+msgid "Too many attempts. Please try again later."
+msgstr ""
+
+#: includes/class-oli-bis-frontend.php:62
+#: includes/class-oli-bis-ajax.php:137
+msgid "Unable to save your notification request. Please try again."
+msgstr ""
+
+#: templates/my-account.php:48
+msgid "Unsubscribe"
+msgstr ""
+
+#: templates/emails/oli-bis-notification.php:27
+msgid "Unsubscribe from all stock notifications"
+msgstr ""
+
+#: templates/emails/plain/oli-bis-notification.php:18
+msgid "Unsubscribe from all stock notifications:"
+msgstr ""
+
+#: templates/emails/oli-bis-signup.php:28
+msgid "Unsubscribe from this notification"
+msgstr ""
+
+#: templates/emails/plain/oli-bis-signup.php:18
+msgid "Unsubscribe:"
+msgstr ""
+
+#: includes/class-oli-bis-my-account.php:119
+msgid "Verification email sent."
+msgstr ""
+
+#: templates/emails/oli-bis-signup.php:25
+msgid "View product"
+msgstr ""
+
+#: includes/admin/class-oli-bis-settings-page.php:93
+msgid "Wait until stock reaches this quantity before sending notifications. Use 0 to send as soon as the product is in stock."
+msgstr ""
+
+#: includes/admin/class-oli-bis-product-admin.php:113
+msgid "Waitlist"
+msgstr ""
+
+#: includes/class-oli-bis-ajax.php:129
+msgid "You are already signed up for this product."
+msgstr ""
+
+#: templates/emails/plain/oli-bis-signup.php:15
+#: templates/emails/oli-bis-signup.php:20
+msgid "You asked us to let you know when this product is available again."
+msgstr ""
+
+#: includes/admin/class-oli-bis-admin.php:285
+#: includes/admin/class-oli-bis-admin.php:348
+msgid "You do not have permission to access this page."
+msgstr ""
+
+#: includes/class-oli-bis-public-actions.php:107
+msgid "You have been unsubscribed from all stock notifications."
+msgstr ""
+
+#: includes/class-oli-bis-public-actions.php:117
+msgid "You have been unsubscribed from this stock notification."
+msgstr ""
+
+#: templates/my-account.php:16
+msgid "You have no stock notifications."
+msgstr ""
+
+#: includes/class-oli-bis-frontend.php:60
+#: includes/class-oli-bis-ajax.php:43
+#: includes/class-oli-bis-ajax.php:165
+msgid "You will be notified when this product is back in stock."
+msgstr ""
+
+#: includes/emails/class-oli-bis-email-signup.php:44
+msgid "You will be notified when {product_name} is back in stock"
+msgstr ""
+
+#: includes/class-oli-bis-public-actions.php:93
+msgid "Your stock notification is confirmed."
+msgstr ""
+
+#: includes/emails/class-oli-bis-email-notification.php:44
+msgid "{product_name} is back in stock"
+msgstr ""

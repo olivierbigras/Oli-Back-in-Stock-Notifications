@@ -1,0 +1,39 @@
+.oli-bis-add-form {
+	margin: 1rem 0 1.5rem;
+}
+
+.oli-bis-cards {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1rem;
+	margin: 1rem 0 2rem;
+}
+
+.oli-bis-card {
+	background: #fff;
+	border: 1px solid #dcdcde;
+	border-radius: 4px;
+	min-width: 10rem;
+	padding: 1rem 1.25rem;
+}
+
+.oli-bis-card strong {
+	display: block;
+	font-size: 1.75rem;
+	line-height: 1.2;
+}
+
+.oli-bis-columns {
+	display: grid;
+	gap: 2rem;
+	grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+	margin-top: 2rem;
+}
+
+.oli-bis-row-actions .button-link {
+	background: none;
+	border: 0;
+	color: #2271b1;
+	cursor: pointer;
+	padding: 0;
+}
