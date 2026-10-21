@@ -79,6 +79,7 @@ Yes. Confirmation and restock emails include a signed one-click link. Logged-in 
 = 0.1.3 =
 * Shortcode aliases from `oli_bis_legacy_map` are registered on `init` so a theme filter is honored; existing tags are not overwritten.
 * `{site_name}` is an alias of `{site_title}` in email templates.
+* Distributable ZIP excludes development files (tests, CI, Composer, package manifests, internal Markdown).
 
 = 0.1.2 =
 * Generic, empty-by-default legacy map (`oli_bis_legacy_map`) for options, metas, and shortcodes.

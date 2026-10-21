@@ -12,6 +12,7 @@ All notable changes to this project are documented in this file.
 ### Added
 
 - `{site_name}` is an alias of `{site_title}` in email templates
+- `.distignore` and `.gitattributes` `export-ignore` so the distributable ZIP omits tests, CI, Composer, package manifests, and internal Markdown
 
 ## 0.1.2 - 2026-10-21
 
