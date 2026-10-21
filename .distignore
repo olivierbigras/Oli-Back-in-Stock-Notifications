@@ -1,0 +1,16 @@
+# Development and packaging files excluded from the distributable ZIP.
+/.git
+/.github
+/tests
+/bin
+/scripts
+/node_modules
+/.gitignore
+/.gitattributes
+/.distignore
+phpcs.xml*
+phpunit.xml*
+/composer.json
+/composer.lock
+package*.json
+*.md

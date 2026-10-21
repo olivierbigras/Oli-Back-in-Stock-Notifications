@@ -1,0 +1,45 @@
+.oli-bis-form-wrap {
+	margin: 1rem 0;
+	max-width: 28rem;
+}
+
+.oli-bis-form {
+	display: grid;
+	gap: 0.75rem;
+}
+
+.oli-bis-email,
+.oli-bis-submit {
+	width: 100%;
+}
+
+.oli-bis-consent {
+	display: flex;
+	gap: 0.5rem;
+	align-items: flex-start;
+}
+
+.oli-bis-honeypot {
+	position: absolute;
+	left: -9999px;
+	height: 0;
+	width: 0;
+	opacity: 0;
+}
+
+.oli-bis-message[hidden] {
+	display: none;
+}
+
+.oli-bis-message.is-error {
+	color: #b32d2e;
+}
+
+.oli-bis-message.is-success {
+	color: #1e7e34;
+}
+
+.oli-bis-catalog-prompt {
+	margin: 0.5rem 0 0;
+	font-size: 0.9em;
+}
