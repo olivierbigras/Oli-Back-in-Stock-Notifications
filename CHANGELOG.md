@@ -2,20 +2,29 @@
 
 All notable changes to this project are documented in this file.
 
+## 0.1.2 - 2026-10-21
+
+### Changed
+
+- Removed built-in third-party shortcode aliases and hardcoded waitlist importer keys
+- Legacy migration is now generic and empty by default via the `oli_bis_legacy_map` filter (old option keys, metas, and shortcodes toward the current ones; optional table suffixes)
+- Existing imported subscriptions keep working; source tables, options, and metas are never deleted
+- Documented how to register a previous shortcode tag through the same filter
+
 ## 0.1.1 - 2026-10-20
 
 ### Added
 
-- Idempotent PixM importer for `{$prefix}wc_back_in_stock_notifications` (dry-run and import; source rows and options are never deleted)
+- Idempotent importer for a previous waitlist table (dry-run and import; source rows and options are never deleted)
 - Dashboard import UI and `legacy_source` / `legacy_id` columns for replay-safe imports
-- PixM shortcode alias `[wc_back_in_stock_form]` with `show_only_out_of_stock`
+- Optional shortcode alias support with `show_only_out_of_stock`
 - Optional signup and restock email bodies with `{product_name}`, `{product_url}`, `{site_name}`
 - Auto-cleanup of sent notifications after N days, plus a manual cleanup button
 - Admin product dropdown filter from existing waitlist products
 
 ### Changed
 
-- Signup AJAX accepts supported products that are enabled, matching PixM (shortcode can show the form even when in stock)
+- Signup AJAX accepts supported products that are enabled (shortcode can show the form even when in stock)
 
 ## 0.1.0 - 2026-10-20
 

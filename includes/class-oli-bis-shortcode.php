@@ -9,41 +9,25 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Registers [oli_bis_notify_form].
+ * Registers [oli_bis_notify_form] and optional aliases from oli_bis_legacy_map.
  *
  * @since 0.1.0
  */
 class Oli_BIS_Shortcode {
 
 	/**
-	 * Registers the shortcode.
+	 * Registers the shortcode and any mapped aliases.
 	 *
 	 * @since 0.1.0
 	 * @return void
 	 */
 	public function register() {
 		add_shortcode( 'oli_bis_notify_form', array( $this, 'render' ) );
-		add_shortcode( 'wc_back_in_stock_form', array( $this, 'render_legacy' ) );
-	}
 
-	/**
-	 * Renders the PixM shortcode alias [wc_back_in_stock_form].
-	 *
-	 * @since 0.1.1
-	 * @param array<string,mixed>|string $atts Attributes.
-	 * @return string
-	 */
-	public function render_legacy( $atts ) {
-		$atts = shortcode_atts(
-			array(
-				'product_id'             => 0,
-				'show_only_out_of_stock' => 'true',
-			),
-			is_array( $atts ) ? $atts : array(),
-			'wc_back_in_stock_form'
-		);
-
-		return $this->render( $atts );
+		foreach ( Oli_BIS_Migrator::shortcode_aliases() as $alias => $target ) {
+			unset( $target );
+			add_shortcode( $alias, array( $this, 'render' ) );
+		}
 	}
 
 	/**

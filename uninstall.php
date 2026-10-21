@@ -17,7 +17,7 @@ if ( empty( $oli_bis_settings['delete_data_on_uninstall'] ) || 'yes' !== $oli_bi
 
 global $wpdb;
 
-// Never drop PixM or other source tables — only this plugin's tables.
+// Never drop source tables from other plugins — only this plugin's tables.
 $oli_bis_tables = array(
 	$wpdb->prefix . 'oli_bis_subscriptions',
 	$wpdb->prefix . 'oli_bis_stats_daily',

@@ -615,22 +615,33 @@ class Oli_BIS_Repository {
 	}
 
 	/**
-	 * Legacy IDs already imported for a source.
+	 * Legacy IDs already imported.
+	 *
+	 * When $source is empty, IDs from every stored legacy_source are returned so
+	 * previously imported rows stay skipped after the source slug changes.
 	 *
 	 * @since 0.1.1
-	 * @param string $source Source slug.
+	 * @param string $source Optional source slug.
 	 * @return array<int,int>
 	 */
-	public static function legacy_ids( $source ) {
+	public static function legacy_ids( $source = '' ) {
 		global $wpdb;
 
-		$table = self::table();
-		$rows  = $wpdb->get_col( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-			$wpdb->prepare(
-				"SELECT legacy_id FROM {$table} WHERE legacy_source = %s AND legacy_id > 0", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-				sanitize_key( $source )
-			)
-		);
+		$table  = self::table();
+		$source = sanitize_key( $source );
+
+		if ( $source ) {
+			$rows = $wpdb->get_col( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				$wpdb->prepare(
+					"SELECT legacy_id FROM {$table} WHERE legacy_source = %s AND legacy_id > 0", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+					$source
+				)
+			);
+		} else {
+			$rows = $wpdb->get_col( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				"SELECT legacy_id FROM {$table} WHERE legacy_id > 0" // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			);
+		}
 
 		return is_array( $rows ) ? array_map( 'absint', $rows ) : array();
 	}
@@ -665,7 +676,7 @@ class Oli_BIS_Repository {
 			'status'             => $status,
 			'language'           => isset( $mapped['language'] ) ? sanitize_text_field( $mapped['language'] ) : '',
 			'attributes'         => self::encode_attributes( array() ),
-			'source'             => isset( $mapped['source'] ) ? sanitize_key( $mapped['source'] ) : 'pixm',
+			'source'             => isset( $mapped['source'] ) ? sanitize_key( $mapped['source'] ) : 'legacy',
 			'consent'            => 1,
 			'consent_at'         => $now,
 			'created_at'         => ! empty( $mapped['created_at'] ) ? $mapped['created_at'] : $now,
@@ -696,7 +707,7 @@ class Oli_BIS_Repository {
 	}
 
 	/**
-	 * Deletes notified rows older than N days (PixM auto-cleanup equivalent).
+	 * Deletes notified rows older than N days.
 	 *
 	 * @since 0.1.1
 	 * @param int $days Days.

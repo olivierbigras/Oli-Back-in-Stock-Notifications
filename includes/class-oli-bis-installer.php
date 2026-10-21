@@ -65,7 +65,7 @@ class Oli_BIS_Installer {
 		}
 
 		/**
-		 * Fires after tables are installed so a legacy PixM plugin can migrate.
+		 * Fires after tables are installed so a site can run a mapped legacy import.
 		 *
 		 * @since 0.1.0
 		 */

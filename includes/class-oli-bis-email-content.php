@@ -1,6 +1,6 @@
 <?php
 /**
- * Optional custom email body from settings (PixM templates).
+ * Optional custom email body from settings.
  *
  * @package Oli_BIS
  * @since   0.1.1
@@ -9,7 +9,7 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Replaces PixM-style placeholders in stored email templates.
+ * Replaces placeholders in stored email templates.
  *
  * @since 0.1.1
  */

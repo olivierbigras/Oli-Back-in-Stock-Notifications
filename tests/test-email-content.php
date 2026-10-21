@@ -8,7 +8,7 @@
 use PHPUnit\Framework\TestCase;
 
 /**
- * Tests PixM-style placeholder replacement.
+ * Tests placeholder replacement.
  */
 class Oli_BIS_Email_Content_Test extends TestCase {
 
@@ -18,11 +18,11 @@ class Oli_BIS_Email_Content_Test extends TestCase {
 			array(
 				'{product_name}' => 'Blue Shirt',
 				'{product_url}'  => 'https://shop.example/p/1',
-				'{site_name}'    => 'PixM',
+				'{site_name}'    => 'Example Shop',
 			)
 		);
 
-		$this->assertSame( 'Hello Blue Shirt at https://shop.example/p/1 from PixM', $out );
+		$this->assertSame( 'Hello Blue Shirt at https://shop.example/p/1 from Example Shop', $out );
 	}
 
 	public function test_replace_empty_template() {

@@ -201,7 +201,7 @@ class Oli_BIS_Settings_Page {
 			),
 			array(
 				'title' => __( 'Email templates', 'oli-back-in-stock-notifications' ),
-				'desc'  => __( 'Optional bodies imported from the PixM plugin. Leave empty to use the default WooCommerce email content. Placeholders: {product_name}, {product_url}, {site_name}.', 'oli-back-in-stock-notifications' ),
+				'desc'  => __( 'Optional custom email bodies. Leave empty to use the default WooCommerce email content. Placeholders: {product_name}, {product_url}, {site_name}.', 'oli-back-in-stock-notifications' ),
 				'type'  => 'title',
 				'id'    => 'oli_bis_email_templates',
 			),
@@ -223,7 +223,7 @@ class Oli_BIS_Settings_Page {
 			),
 			array(
 				'title'   => __( 'Auto-cleanup sent notifications', 'oli-back-in-stock-notifications' ),
-				'desc'    => __( 'Delete notified subscriptions after the number of days below (PixM behaviour).', 'oli-back-in-stock-notifications' ),
+				'desc'    => __( 'Delete notified subscriptions after the number of days below.', 'oli-back-in-stock-notifications' ),
 				'id'      => 'oli_bis_auto_cleanup_notified',
 				'type'    => 'checkbox',
 				'default' => $settings['auto_cleanup_notified'],

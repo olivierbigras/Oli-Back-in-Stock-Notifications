@@ -61,6 +61,23 @@ if ( ! function_exists( 'sanitize_key' ) ) {
 	}
 }
 
+if ( ! function_exists( 'apply_filters' ) ) {
+	/**
+	 * Test stub for apply_filters.
+	 *
+	 * @param string $hook  Hook name.
+	 * @param mixed  $value Value.
+	 * @return mixed
+	 */
+	function apply_filters( $hook, $value ) {
+		if ( isset( $GLOBALS['oli_bis_test_filters'][ $hook ] ) && is_callable( $GLOBALS['oli_bis_test_filters'][ $hook ] ) ) {
+			return call_user_func( $GLOBALS['oli_bis_test_filters'][ $hook ], $value );
+		}
+
+		return $value;
+	}
+}
+
 if ( ! function_exists( 'sanitize_email' ) ) {
 	/**
 	 * Test stub for sanitize_email.

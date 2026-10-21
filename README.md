@@ -5,6 +5,7 @@ WordPress plugin that lets customers join a waitlist for out-of-stock WooCommerc
 - **Display name:** Oli Back in Stock Notifications for WooCommerce
 - **Slug / text domain:** `oli-back-in-stock-notifications`
 - **Author:** [Olivier Bigras](https://olivierbigras.com/) (`bigrat95`)
+- **Repository:** https://github.com/olivierbigras/Oli-Back-in-Stock-Notifications
 - **License:** GPLv2 or later
 - **Requires:** WordPress 6.5+, WooCommerce 9.0+, PHP 7.4+
 - **Tested:** WordPress 7.1, WooCommerce 11.2
@@ -28,58 +29,68 @@ Install the plugin at the repository root (this folder is the plugin).
 - Signup confirmation email
 - Optional admin notification of new signups
 - Dashboard stats (signups, notifications sent, conversions via order attribution)
-- Shortcode `[oli_bis_notify_form]` (PixM alias `[wc_back_in_stock_form]`) and block `oli-bis/notify-form`
-- Safe, idempotent import from the live PixM plugin (dry-run; source data is never deleted)
+- Shortcode `[oli_bis_notify_form]` and block `oli-bis/notify-form`
+- Generic legacy import (filter-based; dry-run; source data is never deleted)
 - Optional custom email bodies and auto-cleanup of sent notifications
 - TranslatePress: store language at signup and send email in that locale
 - HPOS declared; classic and block product templates
 
 Prefix: `oli_bis_` / `Oli_BIS`. No external HTTP calls, tracking, or upsells.
 
-## Data compatibility (PixM 1.0.0)
+## Legacy data migration
 
-Olivier's live plugin **Back in Stock Notifications 1.0.0** (`wc-back-in-stock-notifications`) stores subscribers in:
+This plugin does not ship mappings for any third-party waitlist plugin. The `oli_bis_legacy_map` filter is empty by default.
 
-`{$wpdb->prefix}wc_back_in_stock_notifications`
+Subscriptions already imported on a site keep working. Stored `legacy_source` / `legacy_id` values are left as-is. A later import still skips those rows (unique key `email + product_id + variation_id`, plus every stored `legacy_id`). Source tables, options, and metas are never deleted.
 
-| PixM column | This plugin |
-| --- | --- |
-| `id` | `legacy_id` (`legacy_source = pixm`) |
-| `product_id` (simple or variation ID) | `product_id` + `variation_id` (parent resolved via `wc_get_product`) |
-| `email` | `email` (normalized) |
-| `date_added` | `created_at` / `confirmed_at` |
-| `is_sent` | `status` = `notified` when set, else `active` |
-| `date_sent` | `notified_at` |
-| option `wc_bis_email_template` | `notification_body` (imported only if empty) |
-| option `wc_bis_confirmation_email_template` | `signup_body` (imported only if empty) |
-| option `wc_bis_auto_cleanup` | `auto_cleanup_notified` (30-day cleanup) |
+```php
+add_filter(
+	'oli_bis_legacy_map',
+	static function ( $map ) {
+		$map['options'] = array(
+			'old_email_template'  => 'notification_body',
+			'old_signup_template' => 'signup_body',
+			'old_auto_cleanup'    => 'auto_cleanup_notified',
+		);
+		$map['metas'] = array(
+			'old_enabled_meta' => '_oli_bis_enabled',
+		);
+		$map['shortcodes'] = array(
+			'old_notify_form' => 'oli_bis_notify_form',
+		);
+		$map['tables'] = array(
+			'old_waitlist_subscribers',
+		);
+		$map['source'] = 'legacy';
 
-Unique key here: `email + product_id + variation_id`. A second import of the same PixM row is skipped.
+		return $map;
+	}
+);
+```
 
-### Migration steps
+- `options`: old `wp_options` key => this plugin’s settings key
+- `metas`: old post meta key => new post meta key (copied only when the destination is empty)
+- `shortcodes`: old shortcode tag => `oli_bis_notify_form`
+- `tables`: optional table suffixes without `$wpdb->prefix`
+- `source`: slug stored on newly imported rows (default `legacy`)
 
-1. Keep `wc-back-in-stock-notifications` installed (or at least leave its table and options in the database). Do not uninstall it if that would drop the table.
-2. Activate this plugin. Tables `wp_oli_bis_subscriptions` and `wp_oli_bis_stats_daily` are created; `dbDelta` adds `legacy_source` / `legacy_id` on upgrade from 0.1.0.
-3. Open **WooCommerce → Stock dashboard**. The PixM table name and row count are shown when present.
-4. Click **Dry-run import**. Confirm the import / skip / invalid counts. Nothing is written.
-5. Click **Import subscribers**. Rows are copied; PixM rows and options stay in place.
-6. Review WooCommerce → Stock Notifications, then WooCommerce → Settings → Stock Notifications / Emails for imported templates.
-7. After a restock email looks correct, deactivate the PixM plugin. Do not delete its table until you are satisfied.
+When a table or option map is present, **WooCommerce → Stock dashboard** shows dry-run and import buttons.
 
-Not imported on purpose: hardcoded `From: info@pixm.com` and gtag tracking.
+### Shortcode aliases
 
-### Features compared with PixM 1.0.0
+The built-in shortcode is `[oli_bis_notify_form]`. No other tags are registered unless you add them:
 
-| PixM 1.0.0 | This plugin (0.1.1) |
-| --- | --- |
-| Table `wc_back_in_stock_notifications` | Imported into `oli_bis_subscriptions` |
-| Shortcode `[wc_back_in_stock_form]` | Same alias, plus `[oli_bis_notify_form]` and a block |
-| Custom email textareas + `{product_name}` / `{product_url}` / `{site_name}` | Same placeholders; WooCommerce email classes wrap them |
-| Auto-delete sent rows after 30 days | Setting + daily cron + manual cleanup button |
-| Admin product filter dropdown | Dropdown of products that already have subscribers |
-| Immediate `wp_mail` on restock | Action Scheduler batches |
-| Variations stored as a single `product_id` | Parent + variation columns |
-| No GDPR / double opt-in / My Account / CSV / dashboard / HPOS | Included |
+```php
+add_filter(
+	'oli_bis_legacy_map',
+	static function ( $map ) {
+		$map['shortcodes']['old_notify_form'] = 'oli_bis_notify_form';
+		return $map;
+	}
+);
+```
+
+`[oli_bis_notify_form]` uses the current product. `[oli_bis_notify_form product_id="123"]` targets a specific product. `show_only_out_of_stock="false"` shows the form even when the product is in stock.
 
 ## Gaps vs the official WooCommerce Back In Stock Notifications extension
 
@@ -121,10 +132,10 @@ GitHub Actions runs PHP syntax checks (7.4 / 8.1 / 8.3), PHPCS WordPress, and PH
 10. Export CSV, delete a row, and send a manual notification from the admin list.
 11. Place `[oli_bis_notify_form]` on a page and the block in the editor.
 12. Switch the store to French (or TranslatePress `fr`) and confirm the form/email strings are translated.
-13. On a site that still has `wp_wc_back_in_stock_notifications`, open WooCommerce → Stock dashboard and confirm the PixM table and row count.
-14. Run **Dry-run import**, then **Import subscribers**. Confirm counts, that the PixM table is unchanged, and that a second import reports only skips.
-15. Confirm imported `is_sent` rows are `notified` and pending rows are `active`. For a variation ID in PixM, confirm parent + variation columns.
-16. Place `[wc_back_in_stock_form]` (and `show_only_out_of_stock="false"`) on a page.
+13. Confirm WooCommerce → Stock dashboard hides the import tools when `oli_bis_legacy_map` is empty.
+14. Add a temporary map (options / metas / shortcodes / tables), reload the dashboard, run **Dry-run import**, then **Import subscribers**. Confirm counts, that source data is unchanged, and that a second import reports only skips.
+15. Confirm imported `is_sent` rows are `notified` and pending rows are `active`. For a stored variation ID, confirm parent + variation columns.
+16. Register an old shortcode tag through `oli_bis_legacy_map['shortcodes']` and confirm it renders the same form.
 
 ## Verified locally
 

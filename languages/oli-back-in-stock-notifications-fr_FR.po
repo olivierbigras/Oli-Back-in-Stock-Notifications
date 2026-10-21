@@ -2,7 +2,7 @@
 # This file is distributed under the GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Oli Back in Stock Notifications for WooCommerce 0.1.1\n"
+"Project-Id-Version: Oli Back in Stock Notifications for WooCommerce 0.1.2\n"
 "Report-Msgid-Bugs-To: https://github.com/olivierbigras/Oli-Back-in-Stock-Notifications\n"
 "POT-Creation-Date: 2026-10-20 13:00+0000\n"
 "MIME-Version: 1.0\n"
@@ -523,9 +523,9 @@ msgstr "Votre alerte de stock est confirmée."
 msgid "{product_name} is back in stock"
 msgstr "{product_name} est de nouveau en stock"
 
-#: includes/admin/class-oli-bis-dashboard.php:119
-msgid "PixM data import"
-msgstr "Import des données PixM"
+#: includes/admin/class-oli-bis-dashboard.php:123
+msgid "Legacy data import"
+msgstr "Import des données existantes"
 
 #: includes/admin/class-oli-bis-dashboard.php:128
 #, php-format
@@ -536,9 +536,9 @@ msgstr "Résultat de l’import — import : %1$d, ignorés : %2$d, invalides : 
 msgid "This was a dry run."
 msgstr "Il s’agissait d’un essai (dry run)."
 
-#: includes/admin/class-oli-bis-dashboard.php:142
-msgid "No PixM table (wc_back_in_stock_notifications) was found on this site."
-msgstr "Aucune table PixM (wc_back_in_stock_notifications) n’a été trouvée sur ce site."
+#: includes/admin/class-oli-bis-dashboard.php:146
+msgid "No mapped waitlist table was found on this site. Mapped options and metas can still be imported."
+msgstr "Aucune table de liste d’attente mappée n’a été trouvée sur ce site. Les options et métas mappées peuvent tout de même être importées."
 
 #: includes/admin/class-oli-bis-dashboard.php:150
 #, php-format
@@ -577,8 +577,8 @@ msgid "Email templates"
 msgstr "Modèles de courriel"
 
 #: includes/admin/class-oli-bis-settings-page.php:204
-msgid "Optional bodies imported from the PixM plugin. Leave empty to use the default WooCommerce email content. Placeholders: {product_name}, {product_url}, {site_name}."
-msgstr "Corps facultatifs importés du plugin PixM. Laissez vide pour le contenu WooCommerce par défaut. Variables : {product_name}, {product_url}, {site_name}."
+msgid "Optional custom email bodies. Leave empty to use the default WooCommerce email content. Placeholders: {product_name}, {product_url}, {site_name}."
+msgstr "Corps de courriel facultatifs. Laissez vide pour le contenu WooCommerce par défaut. Variables : {product_name}, {product_url}, {site_name}."
 
 #: includes/admin/class-oli-bis-settings-page.php:209
 msgid "Signup confirmation body"
@@ -593,8 +593,8 @@ msgid "Auto-cleanup sent notifications"
 msgstr "Nettoyage automatique des notifications envoyées"
 
 #: includes/admin/class-oli-bis-settings-page.php:226
-msgid "Delete notified subscriptions after the number of days below (PixM behaviour)."
-msgstr "Supprimer les inscriptions notifiées après le nombre de jours ci-dessous (comportement PixM)."
+msgid "Delete notified subscriptions after the number of days below."
+msgstr "Supprimer les inscriptions notifiées après le nombre de jours ci-dessous."
 
 #: includes/admin/class-oli-bis-settings-page.php:233
 msgid "Delete sent notifications after (days)"

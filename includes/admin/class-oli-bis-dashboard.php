@@ -108,15 +108,19 @@ class Oli_BIS_Dashboard {
 	}
 
 	/**
-	 * PixM import tools. Never deletes the source table.
+	 * Legacy import tools when oli_bis_legacy_map is configured. Never deletes source data.
 	 *
 	 * @since 0.1.1
 	 * @return void
 	 */
 	private function render_migration() {
+		if ( ! Oli_BIS_Migrator::is_configured() ) {
+			return;
+		}
+
 		$detect = Oli_BIS_Migrator::detect();
 
-		echo '<h2>' . esc_html__( 'PixM data import', 'oli-back-in-stock-notifications' ) . '</h2>';
+		echo '<h2>' . esc_html__( 'Legacy data import', 'oli-back-in-stock-notifications' ) . '</h2>';
 
 		if ( ! empty( $_GET['oli_bis_migrated'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$report = get_transient( 'oli_bis_migrate_report' );
@@ -139,20 +143,20 @@ class Oli_BIS_Dashboard {
 		}
 
 		if ( empty( $detect['table_exists'] ) ) {
-			echo '<p>' . esc_html__( 'No PixM table (wc_back_in_stock_notifications) was found on this site.', 'oli-back-in-stock-notifications' ) . '</p>';
-			return;
+			echo '<p>' . esc_html__( 'No mapped waitlist table was found on this site. Mapped options and metas can still be imported.', 'oli-back-in-stock-notifications' ) . '</p>';
+		} else {
+			$tables = ! empty( $detect['tables'] ) && is_array( $detect['tables'] ) ? $detect['tables'] : array( $detect['table'] );
+			echo '<p>';
+			echo esc_html(
+				sprintf(
+					/* translators: 1: table name, 2: row count */
+					__( 'Found %1$s with %2$d subscriber rows. Import copies them into this plugin and leaves the original table untouched.', 'oli-back-in-stock-notifications' ),
+					implode( ', ', $tables ),
+					(int) $detect['row_count']
+				)
+			);
+			echo '</p>';
 		}
-
-		echo '<p>';
-		echo esc_html(
-			sprintf(
-				/* translators: 1: table name, 2: row count */
-				__( 'Found %1$s with %2$d subscriber rows. Import copies them into this plugin and leaves the original table untouched.', 'oli-back-in-stock-notifications' ),
-				$detect['table'],
-				(int) $detect['row_count']
-			)
-		);
-		echo '</p>';
 
 		echo '<form method="post">';
 		wp_nonce_field( 'oli_bis_migrate' );

@@ -1,6 +1,6 @@
 <?php
 /**
- * PixM and generic legacy data import.
+ * Generic legacy data import.
  *
  * @package Oli_BIS
  * @since   0.1.0
@@ -9,22 +9,122 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Detects Olivier's live PixM plugin storage and imports it safely.
+ * Maps previous waitlist plugin data into this plugin.
  *
- * Source plugin: Back in Stock Notifications 1.0.0, slug
- * wc-back-in-stock-notifications, table
- * {$wpdb->prefix}wc_back_in_stock_notifications. Source rows and options
- * are never deleted.
+ * No third-party names or keys are bundled. Sites provide mappings through
+ * the `oli_bis_legacy_map` filter (empty by default). Already imported
+ * subscriber rows keep working regardless of the stored legacy_source slug.
+ * Source tables, options, and metas are never deleted.
  *
  * @since 0.1.0
  */
 class Oli_BIS_Migrator {
 
-	const PIXM_TABLE    = 'wc_back_in_stock_notifications';
-	const PIXM_SOURCE   = 'pixm';
-	const OPTION_EMAIL  = 'wc_bis_email_template';
-	const OPTION_SIGNUP = 'wc_bis_confirmation_email_template';
-	const OPTION_CLEAN  = 'wc_bis_auto_cleanup';
+	const DEFAULT_SOURCE = 'legacy';
+
+	/**
+	 * Returns the sanitized legacy map. Empty by default.
+	 *
+	 * @since 0.1.2
+	 * @return array{options:array<string,string>,metas:array<string,string>,shortcodes:array<string,string>,tables:array<int,string>,source:string}
+	 */
+	public static function legacy_map() {
+		$defaults = array(
+			'options'    => array(),
+			'metas'      => array(),
+			'shortcodes' => array(),
+			'tables'     => array(),
+			'source'     => self::DEFAULT_SOURCE,
+		);
+
+		/**
+		 * Filters the generic map of previous plugin keys to this plugin.
+		 *
+		 * Empty by default. Use it to list old option keys, post metas, and
+		 * shortcodes (and optionally table suffixes) toward the current ones.
+		 * Previously imported rows are not rewritten.
+		 *
+		 * @since 0.1.2
+		 *
+		 * @param array $map {
+		 *     @type array<string,string> $options    Old option key => settings key.
+		 *     @type array<string,string> $metas      Old post meta key => new post meta key.
+		 *     @type array<string,string> $shortcodes Old shortcode tag => oli_bis_notify_form.
+		 *     @type array<int,string>    $tables     Optional table suffixes without the site prefix.
+		 *     @type string               $source     Optional slug stored on new imports. Default legacy.
+		 * }
+		 */
+		$map = apply_filters( 'oli_bis_legacy_map', $defaults );
+
+		if ( ! is_array( $map ) ) {
+			return $defaults;
+		}
+
+		$clean = $defaults;
+
+		foreach ( array( 'options', 'metas', 'shortcodes' ) as $group ) {
+			$clean[ $group ] = self::sanitize_key_map( isset( $map[ $group ] ) ? $map[ $group ] : array() );
+		}
+
+		if ( ! empty( $map['tables'] ) && is_array( $map['tables'] ) ) {
+			foreach ( $map['tables'] as $suffix ) {
+				$suffix = sanitize_key( (string) $suffix );
+				if ( $suffix ) {
+					$clean['tables'][] = $suffix;
+				}
+			}
+			$clean['tables'] = array_values( array_unique( $clean['tables'] ) );
+		}
+
+		if ( ! empty( $map['source'] ) ) {
+			$source = sanitize_key( (string) $map['source'] );
+			if ( $source ) {
+				$clean['source'] = $source;
+			}
+		}
+
+		return $clean;
+	}
+
+	/**
+	 * Whether any legacy mapping is configured.
+	 *
+	 * @since 0.1.2
+	 * @param array<string,mixed>|null $map Optional map.
+	 * @return bool
+	 */
+	public static function is_configured( $map = null ) {
+		$map = is_array( $map ) ? $map : self::legacy_map();
+
+		return ! empty( $map['options'] ) || ! empty( $map['metas'] ) || ! empty( $map['shortcodes'] ) || ! empty( $map['tables'] );
+	}
+
+	/**
+	 * Shortcode aliases that should render the notify form.
+	 *
+	 * @since 0.1.2
+	 * @param array<string,mixed>|null $map Optional map.
+	 * @return array<string,string>
+	 */
+	public static function shortcode_aliases( $map = null ) {
+		$map     = is_array( $map ) ? $map : self::legacy_map();
+		$aliases = array();
+
+		if ( empty( $map['shortcodes'] ) || ! is_array( $map['shortcodes'] ) ) {
+			return $aliases;
+		}
+
+		foreach ( $map['shortcodes'] as $old => $new ) {
+			$old = sanitize_key( (string) $old );
+			$new = sanitize_key( (string) $new );
+
+			if ( $old && 'oli_bis_notify_form' === $new ) {
+				$aliases[ $old ] = $new;
+			}
+		}
+
+		return $aliases;
+	}
 
 	/**
 	 * Candidate legacy table suffixes to inspect.
@@ -33,14 +133,7 @@ class Oli_BIS_Migrator {
 	 * @return array<int,string>
 	 */
 	public static function candidate_suffixes() {
-		return array(
-			self::PIXM_TABLE,
-			'oli_bis_subscriptions',
-			'pixm_bis_subscribers',
-			'pixm_back_in_stock',
-			'wc_bis_notifications',
-			'cwginstock_subscribers',
-		);
+		return self::legacy_map()['tables'];
 	}
 
 	/**
@@ -67,71 +160,59 @@ class Oli_BIS_Migrator {
 	}
 
 	/**
-	 * PixM table name for a prefix.
-	 *
-	 * @since 0.1.1
-	 * @param string $prefix Table prefix.
-	 * @return string
-	 */
-	public static function pixm_table( $prefix ) {
-		return $prefix . self::PIXM_TABLE;
-	}
-
-	/**
-	 * Whether a table name is the PixM subscriber table.
-	 *
-	 * @since 0.1.1
-	 * @param string $table Table name.
-	 * @param string $prefix Prefix.
-	 * @return bool
-	 */
-	public static function is_pixm_table( $table, $prefix ) {
-		return self::pixm_table( $prefix ) === $table;
-	}
-
-	/**
-	 * Detects PixM table and options without writing.
+	 * Detects mapped legacy tables and options without writing.
 	 *
 	 * @since 0.1.1
 	 * @return array<string,mixed>
 	 */
 	public static function detect() {
-		global $wpdb;
-
-		$table  = self::pixm_table( $wpdb->prefix );
-		$exists = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$map    = self::legacy_map();
+		$tables = self::detect_legacy_tables();
+		$first  = isset( $tables[0] ) ? $tables[0] : '';
 		$count  = 0;
 
-		if ( $table === $exists ) {
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-			$count = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$table}" );
+		if ( $tables ) {
+			global $wpdb;
+
+			foreach ( $tables as $table ) {
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				$count += (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$table}" );
+			}
+		}
+
+		$options = array();
+
+		foreach ( $map['options'] as $old_key => $new_key ) {
+			unset( $new_key );
+			$options[ $old_key ] = function_exists( 'get_option' ) ? get_option( $old_key, null ) : null;
 		}
 
 		return array(
-			'table'        => $table,
-			'table_exists' => ( $table === $exists ),
+			'table'        => $first,
+			'tables'       => $tables,
+			'table_exists' => ! empty( $tables ),
 			'row_count'    => $count,
-			'options'      => array(
-				self::OPTION_EMAIL  => get_option( self::OPTION_EMAIL, '' ),
-				self::OPTION_SIGNUP => get_option( self::OPTION_SIGNUP, '' ),
-				self::OPTION_CLEAN  => get_option( self::OPTION_CLEAN, null ),
-			),
-			'other_tables' => self::detect_legacy_tables(),
+			'options'      => $options,
+			'other_tables' => $tables,
+			'source'       => $map['source'],
+			'configured'   => self::is_configured( $map ),
+			'map'          => $map,
 		);
 	}
 
 	/**
-	 * Maps a PixM row into the current schema.
+	 * Maps a simple waitlist row (email, product_id, optional is_sent).
 	 *
-	 * PixM stores the subscribed product or variation ID in `product_id`
-	 * only (no variation column). Pass $parent_id when that ID is a variation.
+	 * Some previous plugins store the subscribed product or variation ID in
+	 * `product_id` only. Pass $parent_id when that ID is a variation.
 	 *
-	 * @since 0.1.1
-	 * @param array<string,mixed> $row       PixM row.
+	 * @since 0.1.2
+	 * @param array<string,mixed> $row       Source row.
 	 * @param int                 $parent_id Parent product ID when $row product is a variation.
+	 * @param string              $source    Legacy source slug.
 	 * @return array<string,mixed>|null
 	 */
-	public static function map_pixm_row( array $row, $parent_id = 0 ) {
+	public static function map_simple_waitlist_row( array $row, $parent_id = 0, $source = self::DEFAULT_SOURCE ) {
 		$email = Oli_BIS_Repository::normalize_email( isset( $row['email'] ) ? (string) $row['email'] : '' );
 		$raw   = absint( isset( $row['product_id'] ) ? $row['product_id'] : 0 );
 
@@ -139,8 +220,9 @@ class Oli_BIS_Migrator {
 			return null;
 		}
 
-		$ids  = self::resolve_product_ids( $raw, absint( $parent_id ) );
-		$sent = ! empty( $row['is_sent'] );
+		$source = self::normalize_source( $source );
+		$ids    = self::resolve_product_ids( $raw, absint( $parent_id ) );
+		$sent   = ! empty( $row['is_sent'] );
 
 		$created = self::normalize_datetime( isset( $row['date_added'] ) ? $row['date_added'] : '' );
 		$sent_at = self::normalize_datetime( isset( $row['date_sent'] ) ? $row['date_sent'] : '' );
@@ -152,21 +234,21 @@ class Oli_BIS_Migrator {
 			'user_id'       => 0,
 			'status'        => $sent ? 'notified' : 'active',
 			'language'      => '',
-			'source'        => self::PIXM_SOURCE,
+			'source'        => $source,
 			'consent'       => true,
 			'created_at'    => $created,
 			'confirmed_at'  => $created,
 			'notified_at'   => $sent ? $sent_at : '',
-			'legacy_source' => self::PIXM_SOURCE,
+			'legacy_source' => $source,
 			'legacy_id'     => absint( isset( $row['id'] ) ? $row['id'] : 0 ),
 		);
 	}
 
 	/**
-	 * Resolves parent/variation IDs from a single PixM product_id.
+	 * Resolves parent/variation IDs from a single stored product ID.
 	 *
 	 * @since 0.1.1
-	 * @param int $product_id Stored PixM product ID.
+	 * @param int $product_id Stored product ID.
 	 * @param int $parent_id  Parent ID when the stored ID is a variation.
 	 * @return array{product_id:int,variation_id:int}
 	 */
@@ -188,26 +270,67 @@ class Oli_BIS_Migrator {
 	}
 
 	/**
-	 * Maps PixM wp_options into current settings keys.
+	 * Maps old option values into current settings keys.
 	 *
-	 * @since 0.1.1
-	 * @param array<string,mixed> $options Raw option values.
+	 * @since 0.1.2
+	 * @param array<string,mixed>       $options Raw option values keyed by the old name.
+	 * @param array<string,string>|null $key_map Old option key => settings key.
 	 * @return array<string,mixed>
 	 */
-	public static function map_pixm_options( array $options ) {
-		$mapped = array();
+	public static function map_options( array $options, $key_map = null ) {
+		$key_map  = is_array( $key_map ) ? self::sanitize_key_map( $key_map ) : self::legacy_map()['options'];
+		$mapped   = array();
+		$defaults = Oli_BIS_Settings::defaults();
 
-		if ( array_key_exists( self::OPTION_CLEAN, $options ) && null !== $options[ self::OPTION_CLEAN ] ) {
-			$mapped['auto_cleanup_notified'] = empty( $options[ self::OPTION_CLEAN ] ) ? 'no' : 'yes';
-			$mapped['cleanup_notified_days'] = 30;
+		foreach ( $key_map as $old_key => $new_key ) {
+			if ( ! array_key_exists( $old_key, $options ) || ! array_key_exists( $new_key, $defaults ) ) {
+				continue;
+			}
+
+			$value = $options[ $old_key ];
+
+			if ( null === $value ) {
+				continue;
+			}
+
+			if ( in_array( $defaults[ $new_key ], array( 'yes', 'no' ), true ) ) {
+				$mapped[ $new_key ] = self::to_yes_no( $value );
+				continue;
+			}
+
+			if ( is_int( $defaults[ $new_key ] ) ) {
+				$mapped[ $new_key ] = absint( $value );
+				continue;
+			}
+
+			if ( '' === $value || ! is_scalar( $value ) ) {
+				continue;
+			}
+
+			$mapped[ $new_key ] = (string) $value;
 		}
 
-		if ( ! empty( $options[ self::OPTION_EMAIL ] ) && is_string( $options[ self::OPTION_EMAIL ] ) ) {
-			$mapped['notification_body'] = $options[ self::OPTION_EMAIL ];
-		}
+		return $mapped;
+	}
 
-		if ( ! empty( $options[ self::OPTION_SIGNUP ] ) && is_string( $options[ self::OPTION_SIGNUP ] ) ) {
-			$mapped['signup_body'] = $options[ self::OPTION_SIGNUP ];
+	/**
+	 * Maps old post meta values into current meta keys.
+	 *
+	 * @since 0.1.2
+	 * @param array<string,mixed>       $metas   Raw meta values keyed by the old name.
+	 * @param array<string,string>|null $key_map Old meta key => new meta key.
+	 * @return array<string,mixed>
+	 */
+	public static function map_metas( array $metas, $key_map = null ) {
+		$key_map = is_array( $key_map ) ? self::sanitize_key_map( $key_map ) : self::legacy_map()['metas'];
+		$mapped  = array();
+
+		foreach ( $key_map as $old_key => $new_key ) {
+			if ( ! array_key_exists( $old_key, $metas ) ) {
+				continue;
+			}
+
+			$mapped[ $new_key ] = $metas[ $old_key ];
 		}
 
 		return $mapped;
@@ -217,9 +340,9 @@ class Oli_BIS_Migrator {
 	 * Classifies a mapped row for import vs skip.
 	 *
 	 * @since 0.1.1
-	 * @param array<string,mixed>|null $mapped             Mapped row.
-	 * @param array<string,int>        $existing_keys      email|product|variation => id.
-	 * @param array<int,int>           $imported_legacy_ids Already imported PixM IDs.
+	 * @param array<string,mixed>|null $mapped              Mapped row.
+	 * @param array<string,int>        $existing_keys       email|product|variation => id.
+	 * @param array<int,int>           $imported_legacy_ids Already imported legacy IDs (any source).
 	 * @return string import|skip|invalid
 	 */
 	public static function classify_mapped( $mapped, array $existing_keys, array $imported_legacy_ids ) {
@@ -258,16 +381,18 @@ class Oli_BIS_Migrator {
 	/**
 	 * Plans an import without writing. Never deletes source data.
 	 *
-	 * Duplicate PixM rows in the same batch are counted as skip after the first.
+	 * Duplicate rows in the same batch are counted as skip after the first.
+	 * Already imported rows (any stored legacy_source) stay skipped.
 	 *
 	 * @since 0.1.1
-	 * @param array<int,array<string,mixed>> $rows                PixM-shaped rows.
+	 * @param array<int,array<string,mixed>> $rows                Source rows.
 	 * @param array<string,int>              $existing_keys       email|product|variation => id.
-	 * @param array<int,int>                 $imported_legacy_ids Already imported PixM IDs.
+	 * @param array<int,int>                 $imported_legacy_ids Already imported legacy IDs.
 	 * @param callable|null                  $parent_resolver     Optional fn(product_id): parent_id.
+	 * @param string                         $source              Legacy source slug for new rows.
 	 * @return array<string,mixed>
 	 */
-	public static function plan_rows( array $rows, array $existing_keys = array(), array $imported_legacy_ids = array(), $parent_resolver = null ) {
+	public static function plan_rows( array $rows, array $existing_keys = array(), array $imported_legacy_ids = array(), $parent_resolver = null, $source = self::DEFAULT_SOURCE ) {
 		$report = array(
 			'import'  => 0,
 			'skip'    => 0,
@@ -275,17 +400,17 @@ class Oli_BIS_Migrator {
 			'mapped'  => array(),
 		);
 
+		$source = self::normalize_source( $source );
+
 		foreach ( $rows as $row ) {
 			$raw    = absint( isset( $row['product_id'] ) ? $row['product_id'] : 0 );
-			$parent = 0;
+			$parent = absint( isset( $row['parent_id'] ) ? $row['parent_id'] : 0 );
 
 			if ( is_callable( $parent_resolver ) ) {
 				$parent = absint( call_user_func( $parent_resolver, $raw ) );
-			} elseif ( isset( $row['parent_id'] ) ) {
-				$parent = absint( $row['parent_id'] );
 			}
 
-			$mapped = self::map_pixm_row( $row, $parent );
+			$mapped = self::map_legacy_row( $row, $parent, $source );
 			$action = self::classify_mapped( $mapped, $existing_keys, $imported_legacy_ids );
 
 			if ( 'invalid' === $action ) {
@@ -313,7 +438,7 @@ class Oli_BIS_Migrator {
 	}
 
 	/**
-	 * Runs a dry-run or import. Never deletes PixM rows or options.
+	 * Runs a dry-run or import. Never deletes source rows, options, or metas.
 	 *
 	 * @since 0.1.1
 	 * @param bool $dry_run When true, only report counts.
@@ -321,6 +446,7 @@ class Oli_BIS_Migrator {
 	 */
 	public static function run( $dry_run = true ) {
 		$detect = self::detect();
+		$map    = isset( $detect['map'] ) && is_array( $detect['map'] ) ? $detect['map'] : self::legacy_map();
 
 		$report = array(
 			'dry_run'  => (bool) $dry_run,
@@ -329,28 +455,33 @@ class Oli_BIS_Migrator {
 			'skip'     => 0,
 			'invalid'  => 0,
 			'options'  => 0,
+			'metas'    => 0,
 			'error'    => '',
 		);
 
-		if ( empty( $detect['table_exists'] ) ) {
-			$report['error'] = 'not_found';
+		if ( empty( $detect['configured'] ) ) {
+			$report['error'] = 'not_configured';
 			return $report;
 		}
 
 		global $wpdb;
 
-		$table = $detect['table'];
-		$rows  = $wpdb->get_results( "SELECT * FROM {$table} ORDER BY id ASC", ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$rows = array();
 
-		if ( ! is_array( $rows ) ) {
-			return $report;
+		foreach ( $detect['tables'] as $table ) {
+			$batch = $wpdb->get_results( "SELECT * FROM {$table} ORDER BY id ASC", ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+
+			if ( is_array( $batch ) ) {
+				$rows = array_merge( $rows, $batch );
+			}
 		}
 
 		$plan = self::plan_rows(
 			$rows,
 			Oli_BIS_Repository::existing_unique_keys(),
-			Oli_BIS_Repository::legacy_ids( self::PIXM_SOURCE ),
-			array( __CLASS__, 'lookup_parent_id' )
+			Oli_BIS_Repository::legacy_ids(),
+			array( __CLASS__, 'lookup_parent_id' ),
+			isset( $map['source'] ) ? $map['source'] : self::DEFAULT_SOURCE
 		);
 
 		$report['import']  = $plan['import'];
@@ -369,23 +500,30 @@ class Oli_BIS_Migrator {
 			}
 
 			$report['import']  = $imported;
-			$report['options'] = self::import_options( $detect['options'] ) ? 1 : 0;
-		} elseif ( self::map_pixm_options( $detect['options'] ) ) {
-			$report['options'] = 1;
+			$report['options'] = self::import_options( $detect['options'], $map['options'] ) ? 1 : 0;
+			$report['metas']   = self::import_metas( $map['metas'] );
+		} else {
+			if ( self::map_options( $detect['options'], $map['options'] ) ) {
+				$report['options'] = 1;
+			}
+			if ( ! empty( $map['metas'] ) ) {
+				$report['metas'] = 1;
+			}
 		}
 
 		return $report;
 	}
 
 	/**
-	 * Copies PixM email/cleanup options into empty local settings.
+	 * Copies mapped options into empty or boolean local settings.
 	 *
 	 * @since 0.1.1
-	 * @param array<string,mixed> $options Detected options.
+	 * @param array<string,mixed>       $options Detected options.
+	 * @param array<string,string>|null $key_map Old option key => settings key.
 	 * @return bool
 	 */
-	public static function import_options( array $options ) {
-		$mapped = self::map_pixm_options( $options );
+	public static function import_options( array $options, $key_map = null ) {
+		$mapped = self::map_options( $options, $key_map );
 
 		if ( empty( $mapped ) ) {
 			return false;
@@ -415,21 +553,76 @@ class Oli_BIS_Migrator {
 	}
 
 	/**
+	 * Copies mapped post metas when the destination key is empty. Never deletes source metas.
+	 *
+	 * @since 0.1.2
+	 * @param array<string,string>|null $key_map Old meta key => new meta key.
+	 * @return int
+	 */
+	public static function import_metas( $key_map = null ) {
+		$key_map = is_array( $key_map ) ? self::sanitize_key_map( $key_map ) : self::legacy_map()['metas'];
+
+		if ( empty( $key_map ) || ! function_exists( 'get_post_meta' ) || ! function_exists( 'update_post_meta' ) ) {
+			return 0;
+		}
+
+		global $wpdb;
+
+		$changed = 0;
+
+		foreach ( $key_map as $old_key => $new_key ) {
+			if ( $old_key === $new_key ) {
+				continue;
+			}
+
+			$rows = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				$wpdb->prepare(
+					"SELECT post_id, meta_value FROM {$wpdb->postmeta} WHERE meta_key = %s",
+					$old_key
+				),
+				ARRAY_A
+			);
+
+			if ( ! is_array( $rows ) ) {
+				continue;
+			}
+
+			foreach ( $rows as $row ) {
+				$post_id  = absint( isset( $row['post_id'] ) ? $row['post_id'] : 0 );
+				$existing = $post_id ? get_post_meta( $post_id, $new_key, true ) : '';
+
+				if ( ! $post_id || ( '' !== $existing && false !== $existing ) ) {
+					continue;
+				}
+
+				update_post_meta( $post_id, $new_key, $row['meta_value'] );
+				++$changed;
+			}
+		}
+
+		return $changed;
+	}
+
+	/**
 	 * Maps a generic legacy row into the current schema.
 	 *
 	 * @since 0.1.0
-	 * @param array<string,mixed> $row Legacy row.
+	 * @param array<string,mixed> $row       Legacy row.
+	 * @param int                 $parent_id Parent product ID when the stored ID is a variation.
+	 * @param string              $source    Legacy source slug.
 	 * @return array<string,mixed>|null
 	 */
-	public static function map_legacy_row( array $row ) {
+	public static function map_legacy_row( array $row, $parent_id = 0, $source = self::DEFAULT_SOURCE ) {
+		$parent_id = absint( isset( $row['parent_id'] ) ? $row['parent_id'] : $parent_id );
+		$source    = self::normalize_source( $source );
+
 		if ( isset( $row['is_sent'] ) || ( isset( $row['email'] ) && isset( $row['product_id'] ) && isset( $row['date_added'] ) ) ) {
-			$parent = absint( isset( $row['parent_id'] ) ? $row['parent_id'] : 0 );
-			return self::map_pixm_row( $row, $parent );
+			return self::map_simple_waitlist_row( $row, $parent_id, $source );
 		}
 
 		$email = '';
 
-		foreach ( array( 'email', 'user_email', 'subscriber_email', 'cwginstock_subscriber_email' ) as $key ) {
+		foreach ( array( 'email', 'user_email', 'subscriber_email' ) as $key ) {
 			if ( ! empty( $row[ $key ] ) ) {
 				$email = Oli_BIS_Repository::normalize_email( (string) $row[ $key ] );
 				break;
@@ -438,7 +631,7 @@ class Oli_BIS_Migrator {
 
 		$product_id = 0;
 
-		foreach ( array( 'product_id', 'post_id', 'cwginstock_product_id' ) as $key ) {
+		foreach ( array( 'product_id', 'post_id' ) as $key ) {
 			if ( ! empty( $row[ $key ] ) ) {
 				$product_id = absint( $row[ $key ] );
 				break;
@@ -451,10 +644,16 @@ class Oli_BIS_Migrator {
 
 		$variation_id = 0;
 
-		foreach ( array( 'variation_id', 'cwginstock_variation_id' ) as $key ) {
+		foreach ( array( 'variation_id' ) as $key ) {
 			if ( ! empty( $row[ $key ] ) ) {
 				$variation_id = absint( $row[ $key ] );
 			}
+		}
+
+		if ( $parent_id && $parent_id !== $product_id && ! $variation_id ) {
+			$ids          = self::resolve_product_ids( $product_id, $parent_id );
+			$product_id   = $ids['product_id'];
+			$variation_id = $ids['variation_id'];
 		}
 
 		$status = 'active';
@@ -480,13 +679,15 @@ class Oli_BIS_Migrator {
 		}
 
 		return array(
-			'email'        => $email,
-			'product_id'   => $product_id,
-			'variation_id' => $variation_id,
-			'user_id'      => isset( $row['user_id'] ) ? absint( $row['user_id'] ) : 0,
-			'status'       => $status,
-			'language'     => isset( $row['language'] ) ? sanitize_text_field( (string) $row['language'] ) : '',
-			'source'       => 'migration',
+			'email'         => $email,
+			'product_id'    => $product_id,
+			'variation_id'  => $variation_id,
+			'user_id'       => isset( $row['user_id'] ) ? absint( $row['user_id'] ) : 0,
+			'status'        => $status,
+			'language'      => isset( $row['language'] ) ? sanitize_text_field( (string) $row['language'] ) : '',
+			'source'        => $source,
+			'legacy_source' => $source,
+			'legacy_id'     => absint( isset( $row['id'] ) ? $row['id'] : 0 ),
 		);
 	}
 
@@ -532,5 +733,65 @@ class Oli_BIS_Migrator {
 		$ts = strtotime( $value );
 
 		return $ts ? gmdate( 'Y-m-d H:i:s', $ts ) : '';
+	}
+
+	/**
+	 * Sanitizes an old => new key map.
+	 *
+	 * @since 0.1.2
+	 * @param mixed $map Raw map.
+	 * @return array<string,string>
+	 */
+	private static function sanitize_key_map( $map ) {
+		$clean = array();
+
+		if ( ! is_array( $map ) ) {
+			return $clean;
+		}
+
+		foreach ( $map as $old => $new ) {
+			$old = sanitize_key( (string) $old );
+			$new = sanitize_key( (string) $new );
+
+			if ( $old && $new ) {
+				$clean[ $old ] = $new;
+			}
+		}
+
+		return $clean;
+	}
+
+	/**
+	 * Normalizes a legacy source slug.
+	 *
+	 * @since 0.1.2
+	 * @param string $source Source.
+	 * @return string
+	 */
+	private static function normalize_source( $source ) {
+		$source = sanitize_key( (string) $source );
+
+		return $source ? $source : self::DEFAULT_SOURCE;
+	}
+
+	/**
+	 * Converts a raw value to yes/no.
+	 *
+	 * @since 0.1.2
+	 * @param mixed $value Raw value.
+	 * @return string
+	 */
+	private static function to_yes_no( $value ) {
+		if ( is_bool( $value ) ) {
+			return $value ? 'yes' : 'no';
+		}
+
+		$value = strtolower( trim( (string) $value ) );
+
+		if ( in_array( $value, array( '', '0', 'no', 'off', 'false' ), true ) ) {
+			return 'no';
+		}
+
+		return 'yes';
 	}
 }
