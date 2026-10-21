@@ -5,7 +5,7 @@ Tags: woocommerce, back in stock, stock notifications, waitlist, restock
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 0.1.3
+Stable tag: 0.1.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -76,10 +76,12 @@ Yes. Confirmation and restock emails include a signed one-click link. Logged-in 
 
 == Changelog ==
 
+= 0.1.4 =
+* Distributable ZIP excludes development files (tests, CI, Composer, package manifests, internal Markdown).
+
 = 0.1.3 =
 * Shortcode aliases from `oli_bis_legacy_map` are registered on `init` so a theme filter is honored; existing tags are not overwritten.
 * `{site_name}` is an alias of `{site_title}` in email templates.
-* Distributable ZIP excludes development files (tests, CI, Composer, package manifests, internal Markdown).
 
 = 0.1.2 =
 * Generic, empty-by-default legacy map (`oli_bis_legacy_map`) for options, metas, and shortcodes.
@@ -95,6 +97,9 @@ Yes. Confirmation and restock emails include a signed one-click link. Logged-in 
 * Initial release.
 
 == Upgrade Notice ==
+
+= 0.1.4 =
+Packaging-only: the distributable ZIP no longer includes development files.
 
 = 0.1.3 =
 Shortcode aliases from a theme filter now register on init. Email templates accept {site_name} as an alias of {site_title}.
