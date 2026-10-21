@@ -3,7 +3,7 @@
  * Plugin Name:       Oli Back in Stock Notifications for WooCommerce
  * Plugin URI:        https://github.com/olivierbigras/Oli-Back-in-Stock-Notifications
  * Description:       Let customers sign up to be notified when out-of-stock WooCommerce products are available again.
- * Version:           0.1.3
+ * Version:           0.1.4
  * Requires at least: 6.5
  * Requires PHP:      7.4
  * Requires Plugins:  woocommerce
@@ -21,7 +21,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'OLI_BIS_VERSION', '0.1.3' );
+define( 'OLI_BIS_VERSION', '0.1.4' );
 define( 'OLI_BIS_FILE', __FILE__ );
 define( 'OLI_BIS_PATH', plugin_dir_path( __FILE__ ) );
 define( 'OLI_BIS_URL', plugin_dir_url( __FILE__ ) );
