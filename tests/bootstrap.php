@@ -57,7 +57,9 @@ if ( ! function_exists( 'sanitize_key' ) ) {
 	 * @return string
 	 */
 	function sanitize_key( $value ) {
-		return strtolower( preg_replace( '/[^a-z0-9_\-]/', '', (string) $value ) );
+		$value = strtolower( (string) $value );
+
+		return preg_replace( '/[^a-z0-9_\-]/', '', $value );
 	}
 }
 
