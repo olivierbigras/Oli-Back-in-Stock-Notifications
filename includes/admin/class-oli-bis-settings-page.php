@@ -201,7 +201,7 @@ class Oli_BIS_Settings_Page {
 			),
 			array(
 				'title' => __( 'Email templates', 'oli-back-in-stock-notifications' ),
-				'desc'  => __( 'Optional custom email bodies. Leave empty to use the default WooCommerce email content. Placeholders: {product_name}, {product_url}, {site_name}.', 'oli-back-in-stock-notifications' ),
+				'desc'  => __( 'Optional custom email bodies. Leave empty to use the default WooCommerce email content. Placeholders: {product_name}, {product_url}, {site_title}, {site_name}.', 'oli-back-in-stock-notifications' ),
 				'type'  => 'title',
 				'id'    => 'oli_bis_email_templates',
 			),

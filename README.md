@@ -78,7 +78,7 @@ When a table or option map is present, **WooCommerce → Stock dashboard** shows
 
 ### Shortcode aliases
 
-The built-in shortcode is `[oli_bis_notify_form]`. No other tags are registered unless you add them:
+The built-in shortcode is `[oli_bis_notify_form]`. No other tags are registered unless you add them. Aliases are registered on `init` (priority 20), so a filter in the theme `functions.php` is picked up. A mapped tag is skipped when `shortcode_exists()` is already true:
 
 ```php
 add_filter(
@@ -135,7 +135,8 @@ GitHub Actions runs PHP syntax checks (7.4 / 8.1 / 8.3), PHPCS WordPress, and PH
 13. Confirm WooCommerce → Stock dashboard hides the import tools when `oli_bis_legacy_map` is empty.
 14. Add a temporary map (options / metas / shortcodes / tables), reload the dashboard, run **Dry-run import**, then **Import subscribers**. Confirm counts, that source data is unchanged, and that a second import reports only skips.
 15. Confirm imported `is_sent` rows are `notified` and pending rows are `active`. For a stored variation ID, confirm parent + variation columns.
-16. Register an old shortcode tag through `oli_bis_legacy_map['shortcodes']` and confirm it renders the same form.
+16. Register an old shortcode tag through `oli_bis_legacy_map['shortcodes']` in the theme `functions.php` and confirm it renders the same form on `init`. Confirm a tag already registered by another plugin is left unchanged.
+17. In a custom email body, confirm `{site_name}` and `{site_title}` both resolve to the site title.
 
 ## Verified locally
 

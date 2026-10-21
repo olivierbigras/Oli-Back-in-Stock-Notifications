@@ -17,12 +17,14 @@ defined( 'ABSPATH' ) || exit;
 
 do_action( 'woocommerce_email_header', $email_heading, $email ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 
-$oli_bis_custom = Oli_BIS_Email_Content::custom_body(
+$oli_bis_site_title = wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES );
+$oli_bis_custom     = Oli_BIS_Email_Content::custom_body(
 	'signup_body',
 	array(
 		'{product_name}' => $product ? $product->get_name() : '',
 		'{product_url}'  => $product_url,
-		'{site_name}'    => wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES ),
+		'{site_title}'   => $oli_bis_site_title,
+		'{site_name}'    => $oli_bis_site_title,
 	)
 );
 ?>

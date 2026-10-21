@@ -80,6 +80,62 @@ if ( ! function_exists( 'apply_filters' ) ) {
 	}
 }
 
+if ( ! function_exists( 'add_action' ) ) {
+	/**
+	 * Test stub for add_action.
+	 *
+	 * @param string   $hook          Hook name.
+	 * @param callable $callback      Callback.
+	 * @param int      $priority      Priority.
+	 * @param int      $accepted_args Accepted args.
+	 * @return void
+	 */
+	function add_action( $hook, $callback, $priority = 10, $accepted_args = 1 ) {
+		unset( $accepted_args );
+		$GLOBALS['oli_bis_test_actions'][ $hook ][] = array(
+			'callback' => $callback,
+			'priority' => $priority,
+		);
+	}
+}
+
+if ( ! function_exists( 'did_action' ) ) {
+	/**
+	 * Test stub for did_action.
+	 *
+	 * @param string $hook Hook name.
+	 * @return int
+	 */
+	function did_action( $hook ) {
+		return isset( $GLOBALS['oli_bis_test_did_actions'][ $hook ] ) ? (int) $GLOBALS['oli_bis_test_did_actions'][ $hook ] : 0;
+	}
+}
+
+if ( ! function_exists( 'add_shortcode' ) ) {
+	/**
+	 * Test stub for add_shortcode.
+	 *
+	 * @param string   $tag      Shortcode tag.
+	 * @param callable $callback Callback.
+	 * @return void
+	 */
+	function add_shortcode( $tag, $callback ) {
+		$GLOBALS['shortcode_tags'][ $tag ] = $callback;
+	}
+}
+
+if ( ! function_exists( 'shortcode_exists' ) ) {
+	/**
+	 * Test stub for shortcode_exists.
+	 *
+	 * @param string $tag Shortcode tag.
+	 * @return bool
+	 */
+	function shortcode_exists( $tag ) {
+		return isset( $GLOBALS['shortcode_tags'][ $tag ] );
+	}
+}
+
 if ( ! function_exists( 'sanitize_email' ) ) {
 	/**
 	 * Test stub for sanitize_email.
@@ -103,3 +159,4 @@ require_once dirname( __DIR__ ) . '/includes/class-oli-bis-repository.php';
 require_once dirname( __DIR__ ) . '/includes/class-oli-bis-migrator.php';
 require_once dirname( __DIR__ ) . '/includes/class-oli-bis-email-content.php';
 require_once dirname( __DIR__ ) . '/includes/class-oli-bis-language.php';
+require_once dirname( __DIR__ ) . '/includes/class-oli-bis-shortcode.php';

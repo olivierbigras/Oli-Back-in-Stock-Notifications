@@ -2,6 +2,17 @@
 
 All notable changes to this project are documented in this file.
 
+## 0.1.3 - 2026-10-21
+
+### Fixed
+
+- Legacy shortcode aliases from `oli_bis_legacy_map` are registered on `init`, so a filter in the theme `functions.php` is honored
+- A mapped shortcode alias is skipped when another plugin already registered that tag (`shortcode_exists`)
+
+### Added
+
+- `{site_name}` is an alias of `{site_title}` in email templates
+
 ## 0.1.2 - 2026-10-21
 
 ### Changed

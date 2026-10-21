@@ -44,6 +44,7 @@ abstract class Oli_BIS_Email extends WC_Email {
 				'{unsubscribe_url}' => '',
 				'{confirm_url}'     => '',
 				'{site_title}'      => '',
+				'{site_name}'       => '',
 			),
 			is_array( $this->placeholders ) ? $this->placeholders : array()
 		);
@@ -75,6 +76,7 @@ abstract class Oli_BIS_Email extends WC_Email {
 		$this->placeholders['{unsubscribe_url}'] = Oli_BIS_Public_Actions::url( $subscription, 'unsubscribe' );
 		$this->placeholders['{confirm_url}']     = Oli_BIS_Public_Actions::url( $subscription, 'confirm', false, 7 * DAY_IN_SECONDS );
 		$this->placeholders['{site_title}']      = $this->get_blogname();
+		$this->placeholders['{site_name}']       = $this->placeholders['{site_title}'];
 
 		return true;
 	}

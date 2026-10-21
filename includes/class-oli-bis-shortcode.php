@@ -16,7 +16,7 @@ defined( 'ABSPATH' ) || exit;
 class Oli_BIS_Shortcode {
 
 	/**
-	 * Registers the shortcode and any mapped aliases.
+	 * Registers the built-in shortcode. Aliases wait until init.
 	 *
 	 * @since 0.1.0
 	 * @return void
@@ -24,8 +24,32 @@ class Oli_BIS_Shortcode {
 	public function register() {
 		add_shortcode( 'oli_bis_notify_form', array( $this, 'render' ) );
 
+		// Themes load after plugins_loaded. Read oli_bis_legacy_map on init
+		// so a filter in functions.php can register shortcode aliases.
+		if ( did_action( 'init' ) ) {
+			$this->register_aliases();
+			return;
+		}
+
+		add_action( 'init', array( $this, 'register_aliases' ), 20 );
+	}
+
+	/**
+	 * Registers mapped shortcode aliases after the theme can add filters.
+	 *
+	 * Skips a tag already claimed by another plugin (shortcode_exists).
+	 *
+	 * @since 0.1.3
+	 * @return void
+	 */
+	public function register_aliases() {
 		foreach ( Oli_BIS_Migrator::shortcode_aliases() as $alias => $target ) {
 			unset( $target );
+
+			if ( shortcode_exists( $alias ) ) {
+				continue;
+			}
+
 			add_shortcode( $alias, array( $this, 'render' ) );
 		}
 	}
